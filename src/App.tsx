@@ -17,7 +17,6 @@ import FormElements from "./pages/Forms/FormElements";
 import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
-import Home from "./pages/Dashboard/Home";
 import AffiliateManagement from "./components/Admin-components/admin/AffiliateManagement";
 import AdminDashboard from "./components/Admin-components/admin/AdminDashboard";
 import AdminAnalytics from "./components/Admin-components/admin/AdminAnalytics";
@@ -38,82 +37,81 @@ import AdminWallets from "./components/Admin-components/admin/AdminWallets";
 import AdminMeetings from "./components/Admin-components/admin/AdminMeetings";
 import AdminSettings from "./components/Admin-components/admin/AdminSettings";
 import AdminPermissions from "./components/Admin-components/admin/AdminPermissions";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import ProtectedAuthRoute from "./components/auth/ProtectedAuthRoute";
 
 export default function App() {
   return (
     <>
-      <Router>
-        <ScrollToTop />
-        <Routes>
-          {/* Dashboard Layout */}
-          <Route element={<AppLayout />}>
-            <Route index path="/" element={<AdminDashboard />} />
-            <Route index path="/admin/analytics" element={<AdminAnalytics />} />
-            <Route index path="/admin/affiliates" element={<AffiliateManagement/>} />
-            <Route path="/admin/finance" element={<FinanceManagement />} />
-            <Route path="/admin/bonus" element={<ManageBonusStructure />} />
-            <Route path="/admin/reports" element={<AdminReports />} />
-            <Route path="/admin/kyc" element={<KYCVerification />} />
-            <Route path="/admin/withdrawals" element={<WithdrawalManagement />} />
-            <Route path="/admin/applications" element={<ApplicationManagement />} />
-            <Route path="/admin/network" element={<NetworkManagement />} />
-            <Route path="/admin/epins" element={<EpinManagement />} />
-            <Route path="/admin/support" element={<SupportTickets />} />
+      <AuthProvider>
+        <Router>
+          <ScrollToTop />
+          <Routes>
+            {/* Dashboard Layout - Protected */}
+            <Route
+              element={
+                <ProtectedRoute>
+                  <AppLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index path="/" element={<AdminDashboard />} />
+              <Route index path="/admin/analytics" element={<AdminAnalytics />} />
+              <Route index path="/admin/affiliates" element={<AffiliateManagement/>} />
+              <Route path="/admin/finance" element={<FinanceManagement />} />
+              <Route path="/admin/bonus" element={<ManageBonusStructure />} />
+              <Route path="/admin/reports" element={<AdminReports />} />
+              <Route path="/admin/kyc" element={<KYCVerification />} />
+              <Route path="/admin/withdrawals" element={<WithdrawalManagement />} />
+              <Route path="/admin/applications" element={<ApplicationManagement />} />
+              <Route path="/admin/network" element={<NetworkManagement />} />
+              <Route path="/admin/epins" element={<EpinManagement />} />
+              <Route path="/admin/support" element={<SupportTickets />} />
 
-            <Route path="/admin/analytics" element={<AdminAnalytics />} />
-            <Route path="/admin/announcements" element={<AdminAnnouncements />} />
-            <Route path="/admin/downloads" element={<AdminDownloads />} />
-            <Route path="/admin/blocked" element={<BlockedAffiliates />} />
-            <Route path="/admin/tree" element={<AffiliateTree />} />
-            <Route path="/admin/wallets" element={<AdminWallets />} />
-            <Route path="/admin/meetings" element={<AdminMeetings />} />
-            <Route path="/admin/settings" element={<AdminSettings />} /> {/* Updated from placeholder */}
-            <Route path="/admin/permissions" element={<AdminPermissions />} /> {/* Updated from placeholder */}
-            
+              <Route path="/admin/analytics" element={<AdminAnalytics />} />
+              <Route path="/admin/announcements" element={<AdminAnnouncements />} />
+              <Route path="/admin/downloads" element={<AdminDownloads />} />
+              <Route path="/admin/blocked" element={<BlockedAffiliates />} />
+              <Route path="/admin/tree" element={<AffiliateTree />} />
+              <Route path="/admin/wallets" element={<AdminWallets />} />
+              <Route path="/admin/meetings" element={<AdminMeetings />} />
+              <Route path="/admin/settings" element={<AdminSettings />} />
+              <Route path="/admin/permissions" element={<AdminPermissions />} />
 
+              {/* Others Page */}
+              <Route path="/profile" element={<UserProfiles />} />
+              <Route path="/calendar" element={<Calendar />} />
+              <Route path="/blank" element={<Blank />} />
 
+              {/* Forms */}
+              <Route path="/form-elements" element={<FormElements />} />
 
+              {/* Tables */}
+              <Route path="/basic-tables" element={<BasicTables />} />
 
+              {/* Ui Elements */}
+              <Route path="/alerts" element={<Alerts />} />
+              <Route path="/avatars" element={<Avatars />} />
+              <Route path="/badge" element={<Badges />} />
+              <Route path="/buttons" element={<Buttons />} />
+              <Route path="/images" element={<Images />} />
+              <Route path="/videos" element={<Videos />} />
 
+              {/* Charts */}
+              <Route path="/line-chart" element={<LineChart />} />
+              <Route path="/bar-chart" element={<BarChart />} />
+            </Route>
 
+            {/* Auth Layout - Protected (logged-in users redirected to dashboard) */}
+            <Route path="/signin" element={<ProtectedAuthRoute><SignIn /></ProtectedAuthRoute>} />
+            <Route path="/signup" element={<ProtectedAuthRoute><SignUp /></ProtectedAuthRoute>} />
 
-
-
-
-
-
-            {/* Others Page */}
-            <Route path="/profile" element={<UserProfiles />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/blank" element={<Blank />} />
-
-            {/* Forms */}
-            <Route path="/form-elements" element={<FormElements />} />
-
-            {/* Tables */}
-            <Route path="/basic-tables" element={<BasicTables />} />
-
-            {/* Ui Elements */}
-            <Route path="/alerts" element={<Alerts />} />
-            <Route path="/avatars" element={<Avatars />} />
-            <Route path="/badge" element={<Badges />} />
-            <Route path="/buttons" element={<Buttons />} />
-            <Route path="/images" element={<Images />} />
-            <Route path="/videos" element={<Videos />} />
-
-            {/* Charts */}
-            <Route path="/line-chart" element={<LineChart />} />
-            <Route path="/bar-chart" element={<BarChart />} />
-          </Route>
-
-          {/* Auth Layout */}
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
-
-          {/* Fallback Route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Router>
+            {/* Fallback Route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
+      </AuthProvider>
     </>
   );
 }

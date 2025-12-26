@@ -6,8 +6,10 @@ import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
+import { useAuth } from "../../context/AuthContext";
 
 export default function SignInForm() {
+  const { login, isAuthenticated } = useAuth();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<boolean>(false);
 
@@ -25,9 +27,10 @@ export default function SignInForm() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) navigate("/");
-  }, []);
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
 
 
   const handleLogin = async (e: FormEvent) => {
@@ -37,22 +40,42 @@ export default function SignInForm() {
 
     try {
       const res = await axios.post(
-        "https://pronext-backend.onrender.com/api/login",
+        "http://localhost:5000/api/login",
         { email, password }
       );
 
       console.log("Success:", res.data);
 
-      
-      if (res?.data.status === 1) {
+      // If status is 1, login successful - navigate directly to dashboard
+      if (res?.data?.status === 1 && res?.data?.data?.token && res?.data?.data?.user) {
+        const { token, user } = res.data.data;
+        
+        // Store in auth context
+        login(
+          {
+            id: user.id,
+            name: `${user.fname || ''} ${user.lname || ''}`.trim(),
+            email: user.email,
+            role: user.role,
+            phone: user.phone,
+          },
+          token
+        );
+
+        // Clear form and navigate to dashboard
+        setEmail("");
+        setPassword("");
+        setOtp("");
+        navigate("/");
+        return;
+      }
+
+      // Otherwise show OTP modal for verification
+      if (res?.data?.success) {
         setOtpModal(true); 
         return;
       }
 
-      if (res.data.token) {
-        localStorage.setItem("token", res.data.token);
-        alert("Login Successful!");
-      }
     } catch (err: any) {
       console.error(err);
       setError(err.response?.data?.message || "Invalid email or password.");
@@ -67,19 +90,51 @@ export default function SignInForm() {
 
     try {
       const res = await axios.post(
-        "https://pronext-backend.onrender.com/api/verify",
+        "http://localhost:5000/api/verify",
         { email, otp }
       );
 
       console.log("OTP Verified:", res.data);
-      if (res.data?.data.token) {
+      if (res.data?.success && res.data?.data?.token) {
+        const { token, user } = res.data.data;
+        
+        // Store in localStorage directly
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify({
+          id: user.id || user._id,
+          name: `${user.fname || ''} ${user.lname || ''}`.trim(),
+          email: user.email,
+          role: user.role,
+          phone: user.phone,
+        }));
 
-        localStorage.setItem("token", res.data?.data.token);
-        alert("OTP Verified! Login Successful");
-        navigate("/")
+        // Also update auth context
+        login(
+          {
+            id: user.id || user._id,
+            name: `${user.fname || ''} ${user.lname || ''}`.trim(),
+            email: user.email,
+            role: user.role,
+            phone: user.phone,
+          },
+          token
+        );
+
+        // Close modal and navigate to dashboard
         setOtpModal(false);
+        setEmail("");
+        setPassword("");
+        setOtp("");
+        
+        // Use small delay to ensure state updates
+        setTimeout(() => {
+          navigate("/");
+        }, 100);
+      } else {
+        setOtpError("Verification failed. Please try again.");
       }
     } catch (err: any) {
+      console.error(err);
       setOtpError(err.response?.data?.message || "Invalid OTP.");
     } finally {
       setOtpLoading(false);
