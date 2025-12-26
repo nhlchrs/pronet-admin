@@ -51,6 +51,22 @@ const navItems: NavItem[] = [
 
 {
   icon: <GridIcon />,
+  name: "User Management",
+  subItems: [
+    { name: "All Users", path: "/admin/users", pro: false },
+  ],
+},
+
+{
+  icon: <CalenderIcon />,
+  name: "Meetings",
+  subItems: [
+    { name: "All Meetings", path: "/admin/meetings", pro: false },
+  ],
+},
+
+{
+  icon: <GridIcon />,
   name: "Finance",
   subItems: [
     { name: "Finance", path: "/admin/finance", pro: false },
@@ -68,7 +84,6 @@ const navItems: NavItem[] = [
     { name: "Announcements", path: "/admin/announcements", pro: false },
     { name: "Download Center", path: "/admin/downloads", pro: false },
     { name: "Support Tickets", path: "/admin/support", pro: false },
-    { name: "Meetings", path: "/admin/meetings", pro: false },
   ],
 },
 

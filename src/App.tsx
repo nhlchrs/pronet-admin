@@ -31,6 +31,7 @@ import NetworkManagement from "./components/Admin-components/admin/NetworkManage
 import EpinManagement from "./components/Admin-components/admin/EpinManagement";
 import SupportTickets from "./components/Admin-components/admin/SupportTickets";
 import AdminAnnouncements from "./components/Admin-components/admin/AdminAnnouncements";
+import AdminUsers from "./components/Admin-components/admin/AdminUsers";
 import AdminDownloads from "./components/Admin-components/admin/AdminDownloads";
 import BlockedAffiliates from "./components/Admin-components/admin/BlockedAffiliates";
 import AffiliateTree from "./components/Admin-components/admin/AffiliateTree";
@@ -39,6 +40,8 @@ import AdminMeetings from "./components/Admin-components/admin/AdminMeetings";
 import AdminSettings from "./components/Admin-components/admin/AdminSettings";
 import AdminPermissions from "./components/Admin-components/admin/AdminPermissions";
 import { AuthProvider } from "./context/AuthContext";
+import { ConfirmationProvider } from "./hooks/useConfirmation";
+import ConfirmationDialog from "./components/ConfirmationDialog";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import ProtectedAuthRoute from "./components/auth/ProtectedAuthRoute";
 
@@ -47,7 +50,9 @@ export default function App() {
     <>
       <Toaster position="bottom-right" richColors />
       <AuthProvider>
-        <Router>
+        <ConfirmationProvider>
+          <ConfirmationDialog />
+          <Router>
           <ScrollToTop />
           <Routes>
             {/* Dashboard Layout - Protected */}
@@ -73,6 +78,7 @@ export default function App() {
 
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
               <Route path="/admin/announcements" element={<AdminAnnouncements />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/downloads" element={<AdminDownloads />} />
               <Route path="/admin/blocked" element={<BlockedAffiliates />} />
               <Route path="/admin/tree" element={<AffiliateTree />} />
@@ -113,6 +119,7 @@ export default function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
+        </ConfirmationProvider>
       </AuthProvider>
     </>
   );

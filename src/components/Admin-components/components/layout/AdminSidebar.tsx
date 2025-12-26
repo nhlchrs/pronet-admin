@@ -5,6 +5,7 @@ import {
   LayoutDashboard, 
   BarChart, 
   Users,
+  UsersRound,
   Network,
   Key,
   Settings,
@@ -49,6 +50,10 @@ const AdminSidebar = ({ collapsed }: AdminSidebarProps) => {
     { icon: UserX, label: 'Blocked Affiliates', path: '/admin/blocked' },
     { icon: Network, label: 'Network', path: '/admin/network' },
     { icon: GitFork, label: 'Affiliate Tree', path: '/admin/tree' },
+  ];
+
+  const userItems = [
+    { icon: UsersRound, label: 'All Users', path: '/admin/users' },
   ];
 
   const financeItems = [
@@ -96,6 +101,7 @@ const AdminSidebar = ({ collapsed }: AdminSidebarProps) => {
     <div className="h-full p-2 overflow-y-auto">
       {renderMenuGroup(dashboardItems, 'Dashboard')}
       {renderMenuGroup(affiliateItems, 'Affiliate Management')}
+      {renderMenuGroup(userItems, 'User Management')}
       {renderMenuGroup(financeItems, 'Finance')}
       {renderMenuGroup(contentItems, 'Content')}
       {renderMenuGroup(systemItems, 'System')}
