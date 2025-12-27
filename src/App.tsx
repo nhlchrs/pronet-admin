@@ -39,6 +39,7 @@ import AdminWallets from "./components/Admin-components/admin/AdminWallets";
 import AdminMeetings from "./components/Admin-components/admin/AdminMeetings";
 import AdminSettings from "./components/Admin-components/admin/AdminSettings";
 import AdminPermissions from "./components/Admin-components/admin/AdminPermissions";
+import AdminPaymentStatistics from "./components/Admin-components/admin/AdminPaymentStatistics";
 import { AuthProvider } from "./context/AuthContext";
 import { ConfirmationProvider } from "./hooks/useConfirmation";
 import ConfirmationDialog from "./components/ConfirmationDialog";
@@ -67,6 +68,7 @@ export default function App() {
               <Route index path="/admin/analytics" element={<AdminAnalytics />} />
               <Route index path="/admin/affiliates" element={<AffiliateManagement/>} />
               <Route path="/admin/finance" element={<FinanceManagement />} />
+              <Route path="/admin/payment-statistics" element={<AdminPaymentStatistics />} />
               <Route path="/admin/bonus" element={<ManageBonusStructure />} />
               <Route path="/admin/reports" element={<AdminReports />} />
               <Route path="/admin/kyc" element={<KYCVerification />} />

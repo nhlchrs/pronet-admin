@@ -70,6 +70,7 @@ const navItems: NavItem[] = [
   name: "Finance",
   subItems: [
     { name: "Finance", path: "/admin/finance", pro: false },
+    { name: "Payment Statistics", path: "/admin/payment-statistics", pro: false },
     { name: "Bonus Structure", path: "/admin/bonus", pro: false },
     { name: "Withdrawals", path: "/admin/withdrawals", pro: false },
     { name: "EPins", path: "/admin/epins", pro: false },
