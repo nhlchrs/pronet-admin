@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
@@ -7,7 +6,7 @@ import {
 } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { 
-  Search, Eye, CheckCircle, XCircle, Filter, Download, ShieldCheck
+  Search, Eye, CheckCircle, XCircle, Filter, Download, ShieldCheck, Loader, AlertCircle
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -26,63 +25,112 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useToast } from '@/hooks/use-toast';
-
-const mockKycData = [
-  {
-    id: "KYC001",
-    affiliateId: "AF001",
-    name: "John Doe",
-    email: "john@example.com",
-    documentType: "Passport",
-    submissionDate: "2023-05-12",
-    status: "Pending",
-  },
-  {
-    id: "KYC002",
-    affiliateId: "AF003",
-    name: "Robert Johnson",
-    email: "robert@example.com",
-    documentType: "ID Card",
-    submissionDate: "2023-05-10",
-    status: "Approved",
-  },
-  {
-    id: "KYC003",
-    affiliateId: "AF004", 
-    name: "Mary Williams",
-    email: "mary@example.com",
-    documentType: "Driving License",
-    submissionDate: "2023-05-15",
-    status: "Rejected",
-  },
-  {
-    id: "KYC004",
-    affiliateId: "AF006",
-    name: "Patricia Davis",
-    email: "patricia@example.com",
-    documentType: "Passport",
-    submissionDate: "2023-05-18",
-    status: "Pending",
-  },
-  {
-    id: "KYC005",
-    affiliateId: "AF002",
-    name: "Alice Smith",
-    email: "alice@example.com",
-    documentType: "ID Card",
-    submissionDate: "2023-05-20",
-    status: "Pending",
-  }
-];
+import axios from 'axios';
+import { useAuth } from '../../../context/AuthContext';
 
 const KYCVerification = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [viewingKYC, setViewingKYC] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [showRejectReason, setShowRejectReason] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [kycList, setKycList] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [verifyingId, setVerifyingId] = useState<string | null>(null);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [stats, setStats] = useState({
+    pending: 0,
+    verified: 0,
+    rejected: 0,
+  });
   const { toast } = useToast();
-  
-  const filteredKYC = mockKycData.filter((kyc) => {
+  const { token } = useAuth();
+
+  // Fetch KYC records from backend
+  const fetchKYCRecords = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await axios.get(
+        'http://localhost:5000/api/admin/kyc/list',
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      
+      
+      if (response.data.success && response.data.data) {
+        const kycRecords = response.data.data.map((kyc: any) => ({
+          id: kyc._id,
+          userId: kyc.userId,
+          name: kyc.fullName,
+          email: kyc.userId?.email || 'N/A',
+          affiliateId: kyc.userId?._id?.toString().slice(-6) || 'N/A',
+          documentType: kyc.documentType,
+          submissionDate: new Date(kyc.createdAt).toLocaleDateString(),
+          status: kyc.status,
+          fullData: kyc,
+        }));
+        setKycList(kycRecords);
+        
+        // Calculate stats
+        const pending = kycRecords.filter(k => k.status === 'pending').length;
+        const verified = kycRecords.filter(k => k.status === 'verified').length;
+        const rejected = kycRecords.filter(k => k.status === 'rejected').length;
+        setStats({ pending, verified, rejected });
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch KYC records';
+      setError(errorMessage);
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      // Use mock data as fallback
+      setKycList([
+        {
+          id: "KYC001",
+          affiliateId: "AF001",
+          name: "John Doe",
+          email: "john@example.com",
+          documentType: "Passport",
+          submissionDate: "2023-05-12",
+          status: "pending",
+        },
+        {
+          id: "KYC002",
+          affiliateId: "AF003",
+          name: "Robert Johnson",
+          email: "robert@example.com",
+          documentType: "ID Card",
+          submissionDate: "2023-05-10",
+          status: "verified",
+        },
+        {
+          id: "KYC003",
+          affiliateId: "AF004", 
+          name: "Mary Williams",
+          email: "mary@example.com",
+          documentType: "Driving License",
+          submissionDate: "2023-05-15",
+          status: "rejected",
+        },
+      ]);
+      setStats({ pending: 1, verified: 1, rejected: 1 });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch KYC records on component mount
+  useEffect(() => {
+    fetchKYCRecords();
+  }, [token]);
+
+  const filteredKYC = kycList.filter((kyc) => {
     const matchesSearch = 
       kyc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       kyc.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -95,9 +143,10 @@ const KYCVerification = () => {
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'approved': return 'bg-green-100 text-green-800';
+      case 'verified': return 'bg-green-100 text-green-800';
       case 'rejected': return 'bg-red-100 text-red-800';
       case 'pending': return 'bg-amber-100 text-amber-800';
+      case 'approved': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -107,20 +156,89 @@ const KYCVerification = () => {
     setIsDialogOpen(true);
   };
   
-  const handleApprove = () => {
-    toast({
-      title: "KYC Approved",
-      description: `KYC for ${viewingKYC.name} has been approved.`,
-    });
-    setIsDialogOpen(false);
+  const handleApprove = async () => {
+    if (!viewingKYC) return;
+    
+    try {
+      setVerifyingId(viewingKYC.id);
+      const response = await axios.post(
+        'http://localhost:5000/api/admin/kyc/verify',
+        {
+          kycId: viewingKYC.id,
+          verificationNotes: 'Approved by admin',
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.data.success) {
+        toast({
+          title: "Success",
+          description: `KYC for ${viewingKYC.name} has been verified.`,
+        });
+        setIsDialogOpen(false);
+        // Refresh list
+        await fetchKYCRecords();
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to verify KYC';
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setVerifyingId(null);
+    }
   };
   
-  const handleReject = () => {
-    toast({
-      title: "KYC Rejected",
-      description: `KYC for ${viewingKYC.name} has been rejected.`,
-    });
-    setIsDialogOpen(false);
+  const handleReject = async () => {
+    if (!viewingKYC) return;
+    
+    if (!rejectReason.trim()) {
+      toast({
+        title: "Error",
+        description: "Please provide a rejection reason",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    try {
+      setRejectingId(viewingKYC.id);
+      const response = await axios.post(
+        'http://localhost:5000/api/admin/kyc/reject',
+        {
+          kycId: viewingKYC.id,
+          rejectionReason: rejectReason,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.data.success) {
+        toast({
+          title: "Success",
+          description: `KYC for ${viewingKYC.name} has been rejected.`,
+        });
+        setIsDialogOpen(false);
+        setShowRejectReason(false);
+        setRejectReason('');
+        // Refresh list
+        await fetchKYCRecords();
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to reject KYC';
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setRejectingId(null);
+    }
   };
 
   return (
@@ -140,18 +258,20 @@ const KYCVerification = () => {
               <CardTitle className="text-base font-medium">Pending Verification</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">3</p>
-              <p className="text-sm text-gray-500">Updated 10 minutes ago</p>
+              <p className="text-2xl font-bold">{stats.pending}</p>
+              <p className="text-sm text-gray-500">
+                {loading ? 'Loading...' : 'Awaiting review'}
+              </p>
             </CardContent>
           </Card>
           
           <Card className="bg-green-50 dark:bg-green-900/20">
             <CardHeader className="pb-2">
-              <CardTitle className="text-base font-medium">Approved</CardTitle>
+              <CardTitle className="text-base font-medium">Verified</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">156</p>
-              <p className="text-sm text-gray-500">Total approved KYC</p>
+              <p className="text-2xl font-bold">{stats.verified}</p>
+              <p className="text-sm text-gray-500">Total verified KYC</p>
             </CardContent>
           </Card>
           
@@ -160,7 +280,7 @@ const KYCVerification = () => {
               <CardTitle className="text-base font-medium">Rejected</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">14</p>
+              <p className="text-2xl font-bold">{stats.rejected}</p>
               <p className="text-sm text-gray-500">Total rejected KYC</p>
             </CardContent>
           </Card>
@@ -171,6 +291,13 @@ const KYCVerification = () => {
             <CardTitle>KYC Applications</CardTitle>
           </CardHeader>
           <CardContent>
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-red-600" />
+                <span className="text-sm text-red-800">{error} - Using demo data</span>
+              </div>
+            )}
+            
             <div className="flex flex-col md:flex-row gap-4 mb-6">
               <div className="w-full md:w-1/3 relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
@@ -179,150 +306,261 @@ const KYCVerification = () => {
                   className="pl-8"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  disabled={loading}
                 />
               </div>
               
               <div className="w-full md:w-1/3">
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <Select value={statusFilter} onValueChange={setStatusFilter} disabled={loading}>
                   <SelectTrigger>
                     <SelectValue placeholder="Filter by Status" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="approved">Approved</SelectItem>
+                    <SelectItem value="verified">Verified</SelectItem>
                     <SelectItem value="rejected">Rejected</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               
               <div className="w-full md:w-1/3 flex justify-end gap-2">
-                <Button variant="outline">
-                  <Filter className="mr-2 h-4 w-4" />
-                  More Filters
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={fetchKYCRecords}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <Loader className="mr-2 h-4 w-4 animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    <>
+                      <Filter className="mr-2 h-4 w-4" />
+                      Refresh
+                    </>
+                  )}
                 </Button>
-                <Button variant="outline">
+                <Button variant="outline" size="sm">
                   <Download className="mr-2 h-4 w-4" />
                   Export
                 </Button>
               </div>
             </div>
 
-            <div className="rounded-md border overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>ID</TableHead>
-                    <TableHead>Affiliate</TableHead>
-                    <TableHead>Document Type</TableHead>
-                    <TableHead>Submission Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-center">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredKYC.map((kyc) => (
-                    <TableRow key={kyc.id}>
-                      <TableCell className="font-medium">{kyc.id}</TableCell>
-                      <TableCell>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{kyc.name}</span>
-                          <span className="text-xs text-gray-500">{kyc.affiliateId}</span>
-                          <span className="text-xs text-gray-500">{kyc.email}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>{kyc.documentType}</TableCell>
-                      <TableCell>{kyc.submissionDate}</TableCell>
-                      <TableCell>
-                        <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(kyc.status)}`}>
-                          {kyc.status}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => handleViewKYC(kyc)}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-
-            <div className="flex justify-between items-center mt-4">
-              <p className="text-sm text-gray-500">
-                Showing {filteredKYC.length} of {mockKycData.length} applications
-              </p>
-              <div className="flex space-x-2">
-                <Button variant="outline" size="sm" disabled>Previous</Button>
-                <Button variant="outline" size="sm">Next</Button>
+            {loading && filteredKYC.length === 0 ? (
+              <div className="text-center py-8">
+                <Loader className="h-8 w-8 animate-spin mx-auto mb-2 text-gray-400" />
+                <p className="text-gray-500">Loading KYC records...</p>
               </div>
-            </div>
+            ) : (
+              <div className="rounded-md border overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID</TableHead>
+                      <TableHead>Affiliate</TableHead>
+                      <TableHead>Document Type</TableHead>
+                      <TableHead>Submission Date</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-center">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredKYC.length > 0 ? (
+                      filteredKYC.map((kyc) => (
+                        <TableRow key={kyc.id}>
+                          <TableCell className="font-medium">{kyc.id}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-col">
+                              <span className="font-medium">{kyc.name}</span>
+                              <span className="text-xs text-gray-500">{kyc.affiliateId}</span>
+                              <span className="text-xs text-gray-500">{kyc.email}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>{kyc.documentType}</TableCell>
+                          <TableCell>{kyc.submissionDate}</TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(kyc.status)}`}>
+                              {kyc.status.charAt(0).toUpperCase() + kyc.status.slice(1)}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => handleViewKYC(kyc)}
+                              disabled={loading}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                          No KYC records found
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+
+            {filteredKYC.length > 0 && (
+              <div className="flex justify-between items-center mt-4">
+                <p className="text-sm text-gray-500">
+                  Showing {filteredKYC.length} of {kycList.length} applications
+                </p>
+                <div className="flex space-x-2">
+                  <Button variant="outline" size="sm" disabled>Previous</Button>
+                  <Button variant="outline" size="sm">Next</Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         {viewingKYC && (
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>KYC Details - {viewingKYC.name}</DialogTitle>
-              <DialogDescription>ID: {viewingKYC.id} | Affiliate ID: {viewingKYC.affiliateId}</DialogDescription>
+              <DialogDescription>ID: {viewingKYC.id} | User: {viewingKYC.affiliateId}</DialogDescription>
             </DialogHeader>
             
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-4">
                 <div>
                   <h3 className="font-medium text-sm text-gray-500">Personal Information</h3>
-                  <p>Name: {viewingKYC.name}</p>
-                  <p>Email: {viewingKYC.email}</p>
-                  <p>Document Type: {viewingKYC.documentType}</p>
-                  <p>Submission Date: {viewingKYC.submissionDate}</p>
-                  <p className="mt-2">
-                    Status: 
-                    <span className={`ml-2 px-2 py-1 rounded-full text-xs ${getStatusColor(viewingKYC.status)}`}>
-                      {viewingKYC.status}
-                    </span>
-                  </p>
+                  <div className="mt-2 space-y-1">
+                    <p><span className="font-medium">Name:</span> {viewingKYC.name}</p>
+                    <p><span className="font-medium">Email:</span> {viewingKYC.email}</p>
+                    <p><span className="font-medium">Document Type:</span> {viewingKYC.documentType}</p>
+                    <p><span className="font-medium">Submission Date:</span> {viewingKYC.submissionDate}</p>
+                    <p className="mt-2">
+                      <span className="font-medium">Status:</span> 
+                      <span className={`ml-2 px-2 py-1 rounded-full text-xs ${getStatusColor(viewingKYC.status)}`}>
+                        {viewingKYC.status.charAt(0).toUpperCase() + viewingKYC.status.slice(1)}
+                      </span>
+                    </p>
+                  </div>
                 </div>
                 
-                <div className="border-t pt-4">
-                  <h3 className="font-medium text-sm text-gray-500">Additional Information</h3>
-                  <p>Phone: +1 234-567-8901</p>
-                  <p>Address: 123 Main St, New York, NY</p>
-                  <p>Date of Birth: 1985-06-15</p>
-                </div>
+                {viewingKYC.fullData && (
+                  <div className="border-t pt-4">
+                    <h3 className="font-medium text-sm text-gray-500">Document Details</h3>
+                    <div className="mt-2 space-y-1 text-sm">
+                      <p><span className="font-medium">Document #:</span> {viewingKYC.fullData.documentNumber}</p>
+                      <p><span className="font-medium">Full Name:</span> {viewingKYC.fullData.fullName}</p>
+                      <p><span className="font-medium">DOB:</span> {new Date(viewingKYC.fullData.dateOfBirth).toLocaleDateString()}</p>
+                      <p><span className="font-medium">Gender:</span> {viewingKYC.fullData.gender}</p>
+                    </div>
+                  </div>
+                )}
+
+                {viewingKYC.fullData?.address && (
+                  <div className="border-t pt-4">
+                    <h3 className="font-medium text-sm text-gray-500">Address</h3>
+                    <div className="mt-2 space-y-1 text-sm">
+                      <p>{viewingKYC.fullData.address.street}</p>
+                      <p>{viewingKYC.fullData.address.city}, {viewingKYC.fullData.address.state} {viewingKYC.fullData.address.zipCode}</p>
+                      <p>{viewingKYC.fullData.address.country}</p>
+                    </div>
+                  </div>
+                )}
               </div>
               
               <div className="space-y-2">
                 <h3 className="font-medium text-sm text-gray-500">Document Preview</h3>
-                <div className="border rounded-md bg-gray-50 flex items-center justify-center h-40">
-                  <p className="text-gray-400">Document preview placeholder</p>
-                </div>
-                <div className="border rounded-md bg-gray-50 flex items-center justify-center h-40">
-                  <p className="text-gray-400">Document preview placeholder</p>
-                </div>
+                {viewingKYC.fullData?.documentImageUrl ? (
+                  <div className="border rounded-md bg-gray-50 flex items-center justify-center h-40">
+                    <img 
+                      src={viewingKYC.fullData.documentImageUrl} 
+                      alt="Document" 
+                      className="max-h-40 object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div className="border rounded-md bg-gray-50 flex items-center justify-center h-40">
+                    <p className="text-gray-400">Front document not available</p>
+                  </div>
+                )}
+                
+                {viewingKYC.fullData?.backImageUrl ? (
+                  <div className="border rounded-md bg-gray-50 flex items-center justify-center h-40">
+                    <img 
+                      src={viewingKYC.fullData.backImageUrl} 
+                      alt="Back Document" 
+                      className="max-h-40 object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div className="border rounded-md bg-gray-50 flex items-center justify-center h-40">
+                    <p className="text-gray-400">Back document not available</p>
+                  </div>
+                )}
+
+                {viewingKYC.fullData?.verificationNotes && (
+                  <div className="border-t pt-4">
+                    <h3 className="font-medium text-sm text-gray-500">Verification Notes</h3>
+                    <p className="text-sm mt-2">{viewingKYC.fullData.verificationNotes}</p>
+                  </div>
+                )}
+
+                {viewingKYC.fullData?.rejectionReason && (
+                  <div className="border-t pt-4 bg-red-50 p-3 rounded-md">
+                    <h3 className="font-medium text-sm text-red-700">Rejection Reason</h3>
+                    <p className="text-sm mt-2 text-red-600">{viewingKYC.fullData.rejectionReason}</p>
+                  </div>
+                )}
               </div>
             </div>
             
             <DialogFooter className="pt-4 gap-2 sm:gap-0">
-              {viewingKYC.status === 'Pending' && (
+              {viewingKYC.status === 'pending' && (
                 <>
-                  <Button variant="outline" onClick={handleReject}>
-                    <XCircle className="mr-2 h-4 w-4" />
-                    Reject
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowRejectReason(true)}
+                    disabled={rejectingId === viewingKYC.id || verifyingId === viewingKYC.id}
+                  >
+                    {rejectingId === viewingKYC.id ? (
+                      <>
+                        <Loader className="mr-2 h-4 w-4 animate-spin" />
+                        Rejecting...
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className="mr-2 h-4 w-4" />
+                        Reject
+                      </>
+                    )}
                   </Button>
-                  <Button onClick={handleApprove}>
-                    <CheckCircle className="mr-2 h-4 w-4" />
-                    Approve
+                  <Button 
+                    onClick={handleApprove}
+                    disabled={verifyingId === viewingKYC.id || rejectingId === viewingKYC.id}
+                  >
+                    {verifyingId === viewingKYC.id ? (
+                      <>
+                        <Loader className="mr-2 h-4 w-4 animate-spin" />
+                        Approving...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="mr-2 h-4 w-4" />
+                        Approve
+                      </>
+                    )}
                   </Button>
                 </>
               )}
-              {viewingKYC.status !== 'Pending' && (
+              {viewingKYC.status !== 'pending' && (
                 <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                   Close
                 </Button>
@@ -330,6 +568,63 @@ const KYCVerification = () => {
             </DialogFooter>
           </DialogContent>
         )}
+      </Dialog>
+
+      {/* Reject Reason Dialog */}
+      <Dialog open={showRejectReason} onOpenChange={setShowRejectReason}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reject KYC Application</DialogTitle>
+            <DialogDescription>
+              Please provide a reason for rejecting {viewingKYC?.name}'s KYC application
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Rejection Reason</label>
+              <textarea
+                className="w-full p-3 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows={4}
+                placeholder="Explain why this KYC application is being rejected..."
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                disabled={rejectingId === viewingKYC?.id}
+              />
+              <p className="text-xs text-gray-500 mt-1">{rejectReason.length}/500 characters</p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowRejectReason(false);
+                setRejectReason('');
+              }}
+              disabled={rejectingId === viewingKYC?.id}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleReject}
+              disabled={!rejectReason.trim() || rejectingId === viewingKYC?.id}
+            >
+              {rejectingId === viewingKYC?.id ? (
+                <>
+                  <Loader className="mr-2 h-4 w-4 animate-spin" />
+                  Rejecting...
+                </>
+              ) : (
+                <>
+                  <XCircle className="mr-2 h-4 w-4" />
+                  Confirm Rejection
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
     </div>  );
 };
