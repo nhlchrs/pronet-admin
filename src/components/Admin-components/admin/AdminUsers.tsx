@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Search, Eye, Ban, CheckCircle, XCircle, Mail, Phone, X } from 'lucide-react';
+import { Search, Eye, Ban, CheckCircle, XCircle, Mail, Phone, X, Network } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { useConfirmation } from '../../../hooks/useConfirmation';
 import { toast } from 'sonner';
@@ -508,6 +508,15 @@ export default function AdminUsers() {
               >
                 Close
               </button>
+              {selectedUser.referralCode && (
+                <a
+                  href={`/admin/referrals?userId=${selectedUser._id}`}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2"
+                >
+                  <Network className="w-4 h-4" />
+                  View Referral Network
+                </a>
+              )}
               {selectedUser.isSuspended ? (
                 <button
                   onClick={() => handleReactivateUser(selectedUser._id)}

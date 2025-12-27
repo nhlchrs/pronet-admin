@@ -25,6 +25,7 @@ import FinanceManagement from "./components/Admin-components/admin/FinanceManage
 import ManageBonusStructure from "./components/Admin-components/admin/ManageBonusStructure";
 import AdminReports from "./components/Admin-components/admin/AdminReports";
 import KYCVerification from "./components/Admin-components/admin/KYCVerification";
+import TeamManagement from "./components/Admin-components/admin/TeamManagement";
 import WithdrawalManagement from "./components/Admin-components/admin/WithdrawalManagement";
 import ApplicationManagement from "./components/Admin-components/admin/ApplicationManagement";
 import NetworkManagement from "./components/Admin-components/admin/NetworkManagement";
@@ -33,6 +34,7 @@ import SupportTickets from "./components/Admin-components/admin/SupportTickets";
 import AdminAnnouncements from "./components/Admin-components/admin/AdminAnnouncements";
 import AdminUsers from "./components/Admin-components/admin/AdminUsers";
 import AdminDownloads from "./components/Admin-components/admin/AdminDownloads";
+import { ReferralManagementPage } from "./pages/ReferralManagementPage";
 import BlockedAffiliates from "./components/Admin-components/admin/BlockedAffiliates";
 import AffiliateTree from "./components/Admin-components/admin/AffiliateTree";
 import AdminWallets from "./components/Admin-components/admin/AdminWallets";
@@ -72,6 +74,7 @@ export default function App() {
               <Route path="/admin/bonus" element={<ManageBonusStructure />} />
               <Route path="/admin/reports" element={<AdminReports />} />
               <Route path="/admin/kyc" element={<KYCVerification />} />
+              <Route path="/admin/teams" element={<TeamManagement />} />
               <Route path="/admin/withdrawals" element={<WithdrawalManagement />} />
               <Route path="/admin/applications" element={<ApplicationManagement />} />
               <Route path="/admin/network" element={<NetworkManagement />} />
@@ -81,6 +84,7 @@ export default function App() {
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
               <Route path="/admin/announcements" element={<AdminAnnouncements />} />
               <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/referrals" element={<ReferralManagementPage />} />
               <Route path="/admin/downloads" element={<AdminDownloads />} />
               <Route path="/admin/blocked" element={<BlockedAffiliates />} />
               <Route path="/admin/tree" element={<AffiliateTree />} />

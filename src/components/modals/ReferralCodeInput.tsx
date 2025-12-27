@@ -1,0 +1,356 @@
+import { useState, useEffect } from 'react';
+import { Loader2, Copy, CheckCircle, AlertCircle, Share2 } from 'lucide-react';
+import teamReferralService from '../../services/teamReferralService';
+import Button from '../ui/button/Button';
+import Input from '../form/input/InputField';
+import Label from '../form/Label';
+
+// Card components
+const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
+  <div className={`bg-white rounded-lg shadow ${className}`}>{children}</div>
+);
+
+const CardHeader = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
+  <div className={`p-4 border-b ${className}`}>{children}</div>
+);
+
+const CardTitle = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
+  <h3 className={`text-lg font-semibold ${className}`}>{children}</h3>
+);
+
+const CardContent = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
+  <div className={`p-4 ${className}`}>{children}</div>
+);
+
+interface ReferralCodeInputProps {
+  onCodeApplied?: (data: any) => void;
+  onError?: (error: string) => void;
+  showValidation?: boolean;
+}
+
+export const ReferralCodeInput = ({
+  onCodeApplied,
+  onError,
+  showValidation = true,
+}: ReferralCodeInputProps) => {
+  const [code, setCode] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [validationResult, setValidationResult] = useState<any>(null);
+  const [validating, setValidating] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  const handleValidateCode = async () => {
+    if (!code.trim() || !showValidation) return;
+
+    try {
+      setValidating(true);
+      setError('');
+      const result = await teamReferralService.validateReferralCode(code.trim());
+
+      if (result.success) {
+        setValidationResult(result.data);
+      } else {
+        setError(result.message);
+        setValidationResult(null);
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to validate code');
+      setValidationResult(null);
+    } finally {
+      setValidating(false);
+    }
+  };
+
+  const handleApplyCode = async () => {
+    if (!code.trim()) {
+      setError('Please enter a referral code');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError('');
+      setSuccess('');
+
+      const result = await teamReferralService.applyReferralCode(code.trim());
+
+      if (result.success) {
+        setSuccess('Successfully joined team using referral code!');
+        setCode('');
+        setValidationResult(null);
+
+        if (onCodeApplied) {
+          onCodeApplied(result.data);
+        }
+      } else {
+        const errorMsg = result.message;
+        setError(errorMsg);
+        if (onError) {
+          onError(errorMsg);
+        }
+      }
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.message || 'Failed to apply referral code';
+      setError(errorMsg);
+      if (onError) {
+        onError(errorMsg);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Code Input */}
+      <div className="space-y-2">
+        <Label htmlFor="referralCode">Referral Code</Label>
+        <div className="flex gap-2">
+          <Input
+            id="referralCode"
+            placeholder="Enter referral code (e.g., PRO-XXXXX-XXXXXXXX)"
+            value={code}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setCode(e.target.value.toUpperCase());
+              setValidationResult(null);
+              setError('');
+            }}
+            disabled={loading || validating}
+            className="font-mono text-sm"
+          />
+          <button
+            onClick={handleApplyCode}
+            disabled={!code.trim() || loading || !validationResult}
+            className="px-4 py-2 bg-blue-600 text-white rounded gap-2"
+          >
+            {loading && <Loader2 className="w-4 h-4 animate-spin inline mr-2" />}
+            Apply
+          </button>
+        </div>
+
+        {/* Validation Messages */}
+        {validating && (
+          <p className="text-sm text-gray-500">Validating code...</p>
+        )}
+
+        {error && (
+          <div className="flex gap-2 items-start p-3 bg-red-50 border border-red-200 rounded-lg">
+            <AlertCircle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
+            <p className="text-sm text-red-700">{error}</p>
+          </div>
+        )}
+
+        {success && (
+          <div className="flex gap-2 items-start p-3 bg-green-50 border border-green-200 rounded-lg">
+            <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+            <p className="text-sm text-green-700">{success}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Referrer Info Card */}
+      {validationResult && (
+        <Card className="border-blue-200 bg-blue-50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-green-600" />
+              Referrer Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div>
+              <p className="text-sm font-semibold text-gray-600">Referrer Name</p>
+              <p className="text-lg">{validationResult.referrerName}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm font-semibold text-gray-600">Level</p>
+                <p className="text-lg font-bold text-blue-600">
+                  Level {validationResult.referrerLevel}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-600">Direct Referrals</p>
+                <p className="text-lg font-bold text-green-600">
+                  {validationResult.directCount}
+                </p>
+              </div>
+            </div>
+            <p className="text-xs text-gray-600 pt-2 border-t border-blue-200">
+              By applying this code, you'll be added to this referrer's team
+            </p>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+};
+
+// Component to display user's referral code and sharing options
+export const MyReferralCode = ({ userId }: { userId?: string }) => {
+  const [loading, setLoading] = useState(false);
+  const [referralData, setReferralData] = useState<any>(null);
+  const [copied, setCopied] = useState(false);
+  const [error, setError] = useState('');
+
+  const fetchReferralCode = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const result = await teamReferralService.getMyReferralCode();
+
+      if (result.success) {
+        setReferralData(result.data);
+      } else {
+        setError(result.message);
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to fetch referral code');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCopyCode = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchReferralCode();
+  }, []);
+
+  if (loading && !referralData) {
+    return (
+      <Card>
+        <CardContent className="pt-6 text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto text-gray-400" />
+          <p className="text-gray-600 mt-2">Loading referral information...</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="border-red-200">
+        <CardContent className="pt-6">
+          <div className="flex gap-2">
+            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+            <div>
+              <p className="font-semibold text-red-800">Error</p>
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!referralData) return null;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Share2 className="w-5 h-5" />
+          Your Referral Code
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Code Display */}
+        <div className="space-y-2">
+          <Label>Referral Code</Label>
+          <div className="flex gap-2">
+            <div className="flex-1 px-4 py-2 bg-gray-100 rounded-lg border border-gray-300 font-mono font-bold text-lg tracking-wider">
+              {referralData.referralCode}
+            </div>
+            <Button
+              onClick={() => handleCopyCode(referralData.referralCode)}
+              variant="outline"
+              className="gap-2"
+            >
+              <Copy className="w-4 h-4" />
+              {copied ? 'Copied!' : 'Copy'}
+            </Button>
+          </div>
+        </div>
+
+        {/* Referral Link */}
+        <div className="space-y-2">
+          <Label>Referral Link</Label>
+          <div className="flex gap-2">
+            <Input
+              disabled
+              value={referralData.referralLink}
+              className="text-sm"
+            />
+            <Button
+              onClick={() => handleCopyCode(referralData.referralLink)}
+              variant="outline"
+              className="gap-2"
+            >
+              <Copy className="w-4 h-4" />
+              {copied ? 'Copied!' : 'Copy'}
+            </Button>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+          <div>
+            <p className="text-sm font-semibold text-gray-600">Direct Referrals</p>
+            <p className="text-2xl font-bold text-blue-600">
+              {referralData.stats.directCount}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-gray-600">Total Downline</p>
+            <p className="text-2xl font-bold text-green-600">
+              {referralData.stats.totalDownline}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-gray-600">Level</p>
+            <p className="text-2xl font-bold text-purple-600">
+              Level {referralData.stats.level}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-gray-600">Total Earnings</p>
+            <p className="text-2xl font-bold text-green-600">
+              ${(referralData.stats.totalEarnings || 0).toFixed(2)}
+            </p>
+          </div>
+        </div>
+
+        {/* Sponsor Info */}
+        {referralData.sponsor && (
+          <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 text-sm">
+            <p className="font-semibold text-gray-700 mb-1">Your Sponsor</p>
+            <p className="text-gray-600">{referralData.sponsor.name}</p>
+          </div>
+        )}
+
+        {/* Share Instructions */}
+        <div className="p-3 bg-blue-50 rounded-lg border border-blue-200 text-sm text-blue-900">
+          <p className="font-semibold mb-1">How to Share:</p>
+          <ul className="list-disc list-inside space-y-1 text-xs">
+            <li>Share your referral code or link with others</li>
+            <li>They use it during signup or join directly</li>
+            <li>They'll be added to your team</li>
+            <li>You'll earn bonuses from their activity</li>
+          </ul>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default ReferralCodeInput;

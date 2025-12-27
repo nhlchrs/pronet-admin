@@ -54,6 +54,7 @@ const navItems: NavItem[] = [
   name: "User Management",
   subItems: [
     { name: "All Users", path: "/admin/users", pro: false },
+    { name: "Referral Management", path: "/admin/referrals", pro: false },
   ],
 },
 

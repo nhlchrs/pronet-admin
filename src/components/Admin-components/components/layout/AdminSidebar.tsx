@@ -50,6 +50,7 @@ const AdminSidebar = ({ collapsed }: AdminSidebarProps) => {
     { icon: UserX, label: 'Blocked Affiliates', path: '/admin/blocked' },
     { icon: Network, label: 'Network', path: '/admin/network' },
     { icon: GitFork, label: 'Affiliate Tree', path: '/admin/tree' },
+    { icon: Users, label: 'Teams', path: '/admin/teams' },
   ];
 
   const userItems = [
