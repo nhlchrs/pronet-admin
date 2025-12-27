@@ -115,7 +115,7 @@ export default function AdminUsers() {
   const handleReactivateUser = async (userId: string) => {
     const confirmed = await showConfirmation({
       title: 'Reactivate User',
-      message: 'Are you sure you want to reactivate this user?',
+      message: 'Are you sure you want to reactivate this user? This will reset their login count to 0.',
       details: selectedUser ? `User: ${selectedUser.fname} ${selectedUser.lname}` : '',
       confirmText: 'Reactivate',
       cancelText: 'Cancel',
@@ -125,18 +125,16 @@ export default function AdminUsers() {
     if (!confirmed) return;
 
     try {
-      const response = await axios.put(
-        `http://localhost:5000/api/users/${userId}/suspend-status`,
-        {
-          isSuspended: false,
-        },
+      const response = await axios.post(
+        `http://localhost:5000/api/admin/user/${userId}/reactivate`,
+        {},
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       if (response.data?.status === 1 || response.data?.success) {
-        toast.success('User reactivated successfully');
+        toast.success('User reactivated successfully with login count reset');
         await fetchUsers();
         setShowViewModal(false);
       }

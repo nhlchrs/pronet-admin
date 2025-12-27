@@ -43,6 +43,7 @@ import AdminSettings from "./components/Admin-components/admin/AdminSettings";
 import AdminPermissions from "./components/Admin-components/admin/AdminPermissions";
 import AdminPaymentStatistics from "./components/Admin-components/admin/AdminPaymentStatistics";
 import { AuthProvider } from "./context/AuthContext";
+import { SocketProvider } from "./context/SocketContext";
 import { ConfirmationProvider } from "./hooks/useConfirmation";
 import ConfirmationDialog from "./components/ConfirmationDialog";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -53,6 +54,7 @@ export default function App() {
     <>
       <Toaster position="bottom-right" richColors />
       <AuthProvider>
+        <SocketProvider>
         <ConfirmationProvider>
           <ConfirmationDialog />
           <Router>
@@ -126,6 +128,7 @@ export default function App() {
           </Routes>
         </Router>
         </ConfirmationProvider>
+        </SocketProvider>
       </AuthProvider>
     </>
   );

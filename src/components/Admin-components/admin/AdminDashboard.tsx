@@ -3,14 +3,16 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { 
-  Users, DollarSign, Lock, Calendar, CheckCircle
+  Users, DollarSign, Lock, Calendar, CheckCircle, Bell
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../../../context/AuthContext';
+import { useSocket } from '../../../context/SocketContext';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { token } = useAuth();
+  const { socket } = useSocket();
   const [stats, setStats] = useState({
     totalUsers: 0,
     activeUsers: 0,
@@ -20,6 +22,8 @@ const AdminDashboard = () => {
     upcomingMeetings: 0,
     completedMeetings: 0,
     usersWithMeetings: 0,
+    totalAnnouncements: 0,
+    activeAnnouncements: 0,
   });
   const [recentUsers, setRecentUsers] = useState<any[]>([]);
   const [recentMeetings, setRecentMeetings] = useState<any[]>([]);
@@ -36,6 +40,33 @@ const AdminDashboard = () => {
       fetchDashboardData();
     }
   }, [token]);
+
+  // Socket listener for real-time announcement updates
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on('announcement_created', (data) => {
+      console.log('📊 Admin Dashboard: New announcement created', data);
+      setStats((prev) => ({
+        ...prev,
+        totalAnnouncements: prev.totalAnnouncements + 1,
+        activeAnnouncements: data.announcementData?.isActive ? prev.activeAnnouncements + 1 : prev.activeAnnouncements,
+      }));
+    });
+
+    socket.on('announcement_deleted', (data) => {
+      console.log('📊 Admin Dashboard: Announcement deleted', data);
+      setStats((prev) => ({
+        ...prev,
+        totalAnnouncements: Math.max(0, prev.totalAnnouncements - 1),
+      }));
+    });
+
+    return () => {
+      socket.off('announcement_created');
+      socket.off('announcement_deleted');
+    };
+  }, [socket]);
 
   const fetchDashboardData = async () => {
     try {
@@ -110,6 +141,31 @@ const AdminDashboard = () => {
         console.error('Error fetching meetings data:', error);
       }
 
+      // Fetch announcements data
+      let totalAnnouncements = 0;
+      let activeAnnouncements = 0;
+      try {
+        const announcementsResponse = await axios.get('http://localhost:5000/api/announcements', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        
+        console.log('Announcements Response:', announcementsResponse.data);
+        
+        let announcements = [];
+        if (announcementsResponse.data.data?.announcements && Array.isArray(announcementsResponse.data.data.announcements)) {
+          announcements = announcementsResponse.data.data.announcements;
+        } else if (Array.isArray(announcementsResponse.data)) {
+          announcements = announcementsResponse.data;
+        } else if (announcementsResponse.data.data && Array.isArray(announcementsResponse.data.data)) {
+          announcements = announcementsResponse.data.data;
+        }
+        
+        totalAnnouncements = announcements.length;
+        activeAnnouncements = announcements.filter((a: any) => a.isActive).length;
+      } catch (error) {
+        console.error('Error fetching announcements data:', error);
+      }
+
       console.log('Setting stats:', {
         totalUsers,
         activeUsers,
@@ -119,6 +175,8 @@ const AdminDashboard = () => {
         upcomingMeetings,
         completedMeetings,
         usersWithMeetings,
+        totalAnnouncements,
+        activeAnnouncements,
       });
 
       setStats({
@@ -130,6 +188,8 @@ const AdminDashboard = () => {
         upcomingMeetings,
         completedMeetings,
         usersWithMeetings,
+        totalAnnouncements,
+        activeAnnouncements,
       });
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -194,6 +254,36 @@ const AdminDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">${stats.totalRevenue.toLocaleString()}</div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Announcement Statistics */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Announcement Statistics</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between text-sm font-medium">
+                <span>Total Announcements</span>
+                <Bell className="h-5 w-5 text-primary" />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalAnnouncements}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between text-sm font-medium">
+                <span>Active Announcements</span>
+                <Bell className="h-5 w-5 text-green-500" />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.activeAnnouncements}</div>
             </CardContent>
           </Card>
         </div>
