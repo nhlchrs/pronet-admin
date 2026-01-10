@@ -9,7 +9,6 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-     "include": ["src"],
     "noImplicitAny": false,
     "noUnusedParameters": false,
     "skipLibCheck": true,
