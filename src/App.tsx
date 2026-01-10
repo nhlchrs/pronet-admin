@@ -42,6 +42,7 @@ import AdminMeetings from "./components/Admin-components/admin/AdminMeetings";
 import AdminSettings from "./components/Admin-components/admin/AdminSettings";
 import AdminPermissions from "./components/Admin-components/admin/AdminPermissions";
 import AdminPaymentStatistics from "./components/Admin-components/admin/AdminPaymentStatistics";
+import AdminMediaUpload from "./components/Admin-components/admin/AdminMediaUpload";
 import { AuthProvider } from "./context/AuthContext";
 import { SocketProvider } from "./context/SocketContext";
 import { ConfirmationProvider } from "./hooks/useConfirmation";
@@ -92,6 +93,7 @@ export default function App() {
               <Route path="/admin/tree" element={<AffiliateTree />} />
               <Route path="/admin/wallets" element={<AdminWallets />} />
               <Route path="/admin/meetings" element={<AdminMeetings />} />
+              <Route path="/admin/media" element={<AdminMediaUpload />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
               <Route path="/admin/permissions" element={<AdminPermissions />} />
 

@@ -68,6 +68,14 @@ const navItems: NavItem[] = [
 
 {
   icon: <GridIcon />,
+  name: "Media",
+  subItems: [
+    { name: "Secure Media", path: "/admin/media", pro: false },
+  ],
+},
+
+{
+  icon: <GridIcon />,
   name: "Finance",
   subItems: [
     { name: "Finance", path: "/admin/finance", pro: false },
