@@ -7,7 +7,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
   if (isLoading) {
     return (
@@ -21,6 +21,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   if (!isAuthenticated) {
+    return <Navigate to="/signin" replace />;
+  }
+
+  // Check if user has admin role
+  if (user?.role !== "Admin") {
+    // Clear invalid session and redirect to login
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     return <Navigate to="/signin" replace />;
   }
 

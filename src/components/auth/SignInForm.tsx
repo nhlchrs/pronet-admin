@@ -51,6 +51,13 @@ export default function SignInForm() {
       if (res?.data?.status === 1 && res?.data?.data?.token && res?.data?.data?.user) {
         const { token, user } = res.data.data;
         
+        // Check if user has admin role
+        if (user.role !== "Admin") {
+          setError("Access denied. This panel is for administrators only.");
+          setLoading(false);
+          return;
+        }
+        
         // Store in auth context
         login(
           {
@@ -98,6 +105,13 @@ export default function SignInForm() {
       console.log("OTP Verified:", res.data);
       if (res.data?.success && res.data?.data?.token) {
         const { token, user } = res.data.data;
+        
+        // Check if user has admin role
+        if (user.role !== "Admin") {
+          setOtpError("Access denied. This panel is for administrators only.");
+          setOtpLoading(false);
+          return;
+        }
         
         // Store in localStorage directly
         localStorage.setItem("token", token);
