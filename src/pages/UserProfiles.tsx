@@ -1,3 +1,7 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
+import { getApiUrl } from "../config/api";
 import PageBreadcrumb from "../components/common/PageBreadCrumb";
 import UserMetaCard from "../components/UserProfile/UserMetaCard";
 import UserInfoCard from "../components/UserProfile/UserInfoCard";
@@ -5,6 +9,30 @@ import UserAddressCard from "../components/UserProfile/UserAddressCard";
 import PageMeta from "../components/common/PageMeta";
 
 export default function UserProfiles() {
+  const { token } = useAuth();
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(getApiUrl('/user/profile'), {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      console.log("Full API Response:", response.data);
+      console.log("Profile Data:", response.data.data);
+      setProfile(response.data.data);
+    } catch (error: any) {
+      console.error("Failed to fetch profile:", error.response?.data?.message || error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
   return (
     <>
       <PageMeta
@@ -17,9 +45,9 @@ export default function UserProfiles() {
           Profile
         </h3>
         <div className="space-y-6">
-          <UserMetaCard />
-          <UserInfoCard />
-          <UserAddressCard />
+          <UserMetaCard profile={profile} loading={loading} />
+          <UserInfoCard profile={profile} loading={loading} onRefresh={fetchProfile} />
+          <UserAddressCard profile={profile} loading={loading} />
         </div>
       </div>
     </>

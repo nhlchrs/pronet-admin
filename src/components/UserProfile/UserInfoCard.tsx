@@ -9,11 +9,15 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 
-export default function UserInfoCard() {
+interface UserInfoCardProps {
+  profile: any;
+  loading: boolean;
+  onRefresh: () => void;
+}
+
+export default function UserInfoCard({ profile, loading, onRefresh }: UserInfoCardProps) {
   const { isOpen, openModal, closeModal } = useModal();
   const { token, setAuthState } = useAuth();
-  const [profile, setProfile] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     fname: "",
     lname: "",
@@ -24,33 +28,27 @@ export default function UserInfoCard() {
   });
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
-    try {
-      const response = await axios.get(getApiUrl('/user/profile'), {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const userData = response.data.data;
-      setProfile(userData);
+    if (profile) {
       setFormData({
-        fname: userData.fname || "",
-        lname: userData.lname || "",
-        email: userData.email || "",
-        phone: userData.phone || "",
-        address: userData.address || "",
-        dob: userData.dob ? new Date(userData.dob).toISOString().split('T')[0] : ""
+        fname: profile.fname || "",
+        lname: profile.lname || "",
+        email: profile.email || "",
+        phone: profile.phone || "",
+        address: profile.address || "",
+        dob: profile.dob ? new Date(profile.dob).toISOString().split('T')[0] : ""
       });
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      toast.error('Failed to load profile');
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [profile]);
 
-  const handleSave = async () => {
+  const handleSave = async (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    
+    // Validate required fields
+    if (!formData.fname.trim() || !formData.lname.trim()) {
+      toast.error('First name and last name are required');
+      return;
+    }
+
     try {
       const response = await axios.put(getApiUrl('/user/update-profile'), formData, {
         headers: { Authorization: `Bearer ${token}` }
@@ -67,7 +65,7 @@ export default function UserInfoCard() {
       }, token);
       
       toast.success('Profile updated successfully');
-      fetchProfile();
+      onRefresh(); // Refresh parent state
       closeModal();
     } catch (error: any) {
       console.error('Error updating profile:', error);
@@ -121,6 +119,15 @@ export default function UserInfoCard() {
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                Date of Birth
+              </p>
+              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                {loading ? 'Loading...' : profile?.dob ? new Date(profile.dob).toLocaleDateString() : 'N/A'}
+              </p>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                 Role
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
@@ -167,45 +174,12 @@ export default function UserInfoCard() {
             <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
               <div>
                 <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                  Social Links
-                </h5>
-
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div>
-                    <Label>Facebook</Label>
-                    <Input
-                      type="text"
-                      value="https://www.facebook.com/PimjoHQ"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>X.com</Label>
-                    <Input type="text" value="https://x.com/PimjoHQ" />
-                  </div>
-
-                  <div>
-                    <Label>Linkedin</Label>
-                    <Input
-                      type="text"
-                      value="https://www.linkedin.com/company/pimjo"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Instagram</Label>
-                    <Input type="text" value="https://instagram.com/PimjoHQ" />
-                  </div>
-                </div>
-              </div>
-              <div className="mt-7">
-                <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
                   Personal Information
                 </h5>
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>First Name</Label>
+                    <Label>First Name *</Label>
                     <Input 
                       type="text" 
                       value={formData.fname}
@@ -214,7 +188,7 @@ export default function UserInfoCard() {
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Last Name</Label>
+                    <Label>Last Name *</Label>
                     <Input 
                       type="text" 
                       value={formData.lname}
@@ -256,21 +230,6 @@ export default function UserInfoCard() {
                       value={formData.address}
                       onChange={(e) => setFormData({...formData, address: e.target.value})}
                     />
-                  </div>
-
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>Email Address</Label>
-                    <Input type="text" value="randomuser@pimjo.com" />
-                  </div>
-
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>Phone</Label>
-                    <Input type="text" value="+09 363 398 46" />
-                  </div>
-
-                  <div className="col-span-2">
-                    <Label>Bio</Label>
-                    <Input type="text" value="Team Manager" />
                   </div>
                 </div>
               </div>

@@ -3,35 +3,15 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
-import { useAuth } from "../../context/AuthContext";
-import { getApiUrl } from "../../config/api";
-import { useState, useEffect } from "react";
-import axios from "axios";
 import { toast } from "sonner";
 
-export default function UserAddressCard() {
+interface UserAddressCardProps {
+  profile: any;
+  loading: boolean;
+}
+
+export default function UserAddressCard({ profile, loading }: UserAddressCardProps) {
   const { isOpen, openModal, closeModal } = useModal();
-  const { token } = useAuth();
-  const [profile, setProfile] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
-    try {
-      const response = await axios.get(getApiUrl('/user/profile'), {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setProfile(response.data.data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      toast.error('Failed to load profile');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSave = () => {
     // Address functionality can be added later
