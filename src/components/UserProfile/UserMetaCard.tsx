@@ -1,11 +1,24 @@
 interface UserMetaCardProps {
   profile: any;
   loading: boolean;
+  onRefresh?: () => void;
 }
 
-export default function UserMetaCard({ profile, loading }: UserMetaCardProps) {
+export default function UserMetaCard({ profile, loading, onRefresh }: UserMetaCardProps) {
   console.log("UserMetaCard - Profile:", profile);
   console.log("UserMetaCard - fname:", profile?.fname, "lname:", profile?.lname);
+  console.log("UserMetaCard - profilePicture:", profile?.profilePicture);
+
+  const getImageUrl = (path: string) => {
+    if (!path) return null;
+    if (path?.startsWith("http")) return path;
+    // Remove /api from the URL for uploads (uploads are served at root level)
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const baseUrl = apiUrl.replace(/\/api$/, '');
+    const fullUrl = `${baseUrl}${path}`;
+    console.log("Image URL constructed:", fullUrl);
+    return fullUrl;
+  };
   
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
@@ -14,6 +27,25 @@ export default function UserMetaCard({ profile, loading }: UserMetaCardProps) {
             <div className="w-20 h-20 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
               {loading ? (
                 <div className="animate-pulse text-gray-400">...</div>
+              ) : profile?.profilePicture && getImageUrl(profile.profilePicture) ? (
+                <>
+                  <img
+                    src={getImageUrl(profile.profilePicture)}
+                    alt={`${profile?.fname} ${profile?.lname}`}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      console.error("Image failed to load:", getImageUrl(profile.profilePicture));
+                      e.currentTarget.style.display = 'none';
+                      const parent = e.currentTarget.parentElement;
+                      if (parent) {
+                        const initials = document.createElement('span');
+                        initials.className = 'text-2xl font-bold text-gray-600 dark:text-gray-300';
+                        initials.textContent = `${profile?.fname?.[0] || ''}${profile?.lname?.[0] || ''}`;
+                        parent.appendChild(initials);
+                      }
+                    }}
+                  />
+                </>
               ) : (
                 <span className="text-2xl font-bold text-gray-600 dark:text-gray-300">
                   {profile?.fname?.[0]}{profile?.lname?.[0]}

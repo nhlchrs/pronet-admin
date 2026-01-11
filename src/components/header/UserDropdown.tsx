@@ -1,13 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
+import { getApiUrl } from "../../config/api";
 
 export default function UserDropdown() {
-  const { user, logout } = useAuth();
+  const { user, logout, token } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProfilePicture = async () => {
+      try {
+        const response = await axios.get(getApiUrl('/user/profile'), {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setProfilePicture(response.data.data?.profilePicture);
+      } catch (error) {
+        console.error("Failed to fetch profile picture:", error);
+      }
+    };
+
+    if (token) {
+      fetchProfilePicture();
+    }
+  }, [token]);
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -21,14 +41,55 @@ export default function UserDropdown() {
     logout();
     navigate("/signin");
   };
+
+  const getImageUrl = (path: string) => {
+    if (!path) return "";
+    if (path?.startsWith("http")) return path;
+    // Remove /api from the URL for uploads (uploads are served at root level)
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const baseUrl = apiUrl.replace(/\/api$/, '');
+    const fullUrl = `${baseUrl}${path}`;
+    console.log("UserDropdown - Image URL:", fullUrl);
+    return fullUrl;
+  };
+
+  const getInitials = (name?: string) => {
+    if (!name) return "A";
+    const parts = name.split(" ");
+    return parts.map(p => p[0]).join("").toUpperCase().slice(0, 2);
+  };
+
   return (
     <div className="relative">
       <button
         onClick={toggleDropdown}
         className="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400"
       >
-        <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
-          <img src="/images/user/owner.jpg" alt="User" />
+        <span className="mr-3 overflow-hidden rounded-full h-11 w-11 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+          {profilePicture && getImageUrl(profilePicture) ? (
+            <>
+              <img 
+                src={getImageUrl(profilePicture)} 
+                alt="User" 
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  console.error("UserDropdown - Image failed to load:", getImageUrl(profilePicture));
+                  e.currentTarget.style.display = 'none';
+                  const parent = e.currentTarget.parentElement;
+                  if (parent) {
+                    const initials = document.createElement('span');
+                    initials.className = 'text-sm font-bold text-gray-600 dark:text-gray-300';
+                    initials.textContent = getInitials(user?.name);
+                    parent.appendChild(initials);
+                  }
+                }}
+              />
+            </>
+          ) : (
+            <span className="text-sm font-bold text-gray-600 dark:text-gray-300">
+              {getInitials(user?.name)}
+            </span>
+          )}
         </span>
 
         <span className="block mr-1 font-medium text-theme-sm">
@@ -142,6 +203,31 @@ export default function UserDropdown() {
                 />
               </svg>
               Support
+            </DropdownItem>
+          </li>
+          <li>
+            <DropdownItem
+              onItemClick={closeDropdown}
+              tag="a"
+              to="/reset-password"
+              className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+            >
+              <svg
+                className="fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M8.75 8.5C8.75 6.15279 10.6528 4.25 13 4.25C15.3472 4.25 17.25 6.15279 17.25 8.5V10.25H8.75V8.5ZM7.25 10.25V8.5C7.25 5.32436 9.82436 2.75 13 2.75C16.1756 2.75 18.75 5.32436 18.75 8.5V10.25H19C20.5188 10.25 21.75 11.4812 21.75 13V19C21.75 20.5188 20.5188 21.75 19 21.75H7C5.48122 21.75 4.25 20.5188 4.25 19V13C4.25 11.4812 5.48122 10.25 7 10.25H7.25ZM7 11.75C6.30964 11.75 5.75 12.3096 5.75 13V19C5.75 19.6904 6.30964 20.25 7 20.25H19C19.6904 20.25 20.25 19.6904 20.25 19V13C20.25 12.3096 19.6904 11.75 19 11.75H7ZM13 14.25C13.4142 14.25 13.75 14.5858 13.75 15V17C13.75 17.4142 13.4142 17.75 13 17.75C12.5858 17.75 12.25 17.4142 12.25 17V15C12.25 14.5858 12.5858 14.25 13 14.25Z"
+                  fill=""
+                />
+              </svg>
+              Reset Password
             </DropdownItem>
           </li>
         </ul>

@@ -8,6 +8,7 @@ import { getApiUrl } from "../../config/api";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "sonner";
+import { ProfilePictureUpload } from "../profile/ProfilePictureUpload";
 
 interface UserInfoCardProps {
   profile: any;
@@ -172,6 +173,16 @@ export default function UserInfoCard({ profile, loading, onRefresh }: UserInfoCa
           </div>
           <form className="flex flex-col">
             <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
+              <div className="mb-6">
+                <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
+                  Profile Picture
+                </h5>
+                <ProfilePictureUpload
+                  currentPicture={profile?.profilePicture}
+                  onUploadSuccess={onRefresh}
+                />
+              </div>
+
               <div>
                 <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
                   Personal Information

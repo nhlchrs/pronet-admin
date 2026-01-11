@@ -6,9 +6,9 @@ interface ButtonProps {
   variant?: "primary" | "outline"; // Button variant
   startIcon?: ReactNode; // Icon before the text
   endIcon?: ReactNode; // Icon after the text
-  onClick?: () => void; // Click handler
+  onClick?: () => void | Promise<void>; // Click handler (supports async)
   disabled?: boolean; // Disabled state
-  className?: string; // Disabled state
+  className?: string; // Additional CSS classes
 }
 
 const Button: React.FC<ButtonProps> = ({

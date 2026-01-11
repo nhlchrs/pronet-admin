@@ -45,7 +45,7 @@ export default function UserProfiles() {
           Profile
         </h3>
         <div className="space-y-6">
-          <UserMetaCard profile={profile} loading={loading} />
+          <UserMetaCard profile={profile} loading={loading} onRefresh={fetchProfile} />
           <UserInfoCard profile={profile} loading={loading} onRefresh={fetchProfile} />
           <UserAddressCard profile={profile} loading={loading} />
         </div>

@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router";
 import { Toaster } from "sonner";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
+import ForgotPassword from "./pages/AuthPages/ForgotPassword";
+import ResetPassword from "./pages/AuthPages/ResetPassword";
 import NotFound from "./pages/OtherPage/NotFound";
 import UserProfiles from "./pages/UserProfiles";
 import Videos from "./pages/UiElements/Videos";
@@ -119,11 +121,13 @@ export default function App() {
               {/* Charts */}
               <Route path="/line-chart" element={<LineChart />} />
               <Route path="/bar-chart" element={<BarChart />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
             </Route>
 
             {/* Auth Layout - Protected (logged-in users redirected to dashboard) */}
             <Route path="/signin" element={<ProtectedAuthRoute><SignIn /></ProtectedAuthRoute>} />
             <Route path="/signup" element={<ProtectedAuthRoute><SignUp /></ProtectedAuthRoute>} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
 
             {/* Fallback Route */}
             <Route path="*" element={<NotFound />} />

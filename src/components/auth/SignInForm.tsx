@@ -266,7 +266,7 @@ export default function SignInForm() {
                   </div>
 
                   <Link
-                    to="/reset-password"
+                    to="/forgot-password"
                     className="text-sm text-brand-500 dark:text-brand-400"
                   >
                     Forgot password?
