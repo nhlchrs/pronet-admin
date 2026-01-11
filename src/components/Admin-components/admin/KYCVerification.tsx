@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { 
   Search, Eye, CheckCircle, XCircle, Filter, Download, ShieldCheck, Loader, AlertCircle
 } from 'lucide-react';
+import { getApiUrl } from '../../../config/api';
 import { Badge } from '@/components/ui/badge';
 import {
   Select,
@@ -54,7 +55,7 @@ const KYCVerification = () => {
       setLoading(true);
       setError(null);
       const response = await axios.get(
-        'http://localhost:5000/api/admin/kyc/list',
+        getApiUrl('/admin/kyc/list'),
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -162,7 +163,7 @@ const KYCVerification = () => {
     try {
       setVerifyingId(viewingKYC.id);
       const response = await axios.post(
-        'http://localhost:5000/api/admin/kyc/verify',
+        getApiUrl('/admin/kyc/verify'),
         {
           kycId: viewingKYC.id,
           verificationNotes: 'Approved by admin',
@@ -208,7 +209,7 @@ const KYCVerification = () => {
     try {
       setRejectingId(viewingKYC.id);
       const response = await axios.post(
-        'http://localhost:5000/api/admin/kyc/reject',
+        getApiUrl('/admin/kyc/reject'),
         {
           kycId: viewingKYC.id,
           rejectionReason: rejectReason,

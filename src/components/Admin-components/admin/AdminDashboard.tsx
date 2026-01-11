@@ -8,6 +8,7 @@ import {
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../../../context/AuthContext';
 import { useSocket } from '../../../context/SocketContext';
+import { getApiUrl } from '../../../config/api';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -71,7 +72,7 @@ const AdminDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       // Fetch users data
-      const usersResponse = await axios.get('http://localhost:5000/api/admin/users', {
+      const usersResponse = await axios.get(getApiUrl('/admin/users'), {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -106,7 +107,7 @@ const AdminDashboard = () => {
       let recentMeetingsData: any[] = [];
 
       try {
-        const meetingsResponse = await axios.get('http://localhost:5000/api/admin/meetings', {
+        const meetingsResponse = await axios.get(getApiUrl('/admin/meetings'), {
           headers: { Authorization: `Bearer ${token}` },
         });
         
@@ -145,7 +146,7 @@ const AdminDashboard = () => {
       let totalAnnouncements = 0;
       let activeAnnouncements = 0;
       try {
-        const announcementsResponse = await axios.get('http://localhost:5000/api/announcements', {
+        const announcementsResponse = await axios.get(getApiUrl('/announcements'), {
           headers: { Authorization: `Bearer ${token}` },
         });
         

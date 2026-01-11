@@ -3,6 +3,7 @@ import { ApexOptions } from "apexcharts";
 import ChartTab from "../common/ChartTab";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { getApiUrl } from '../../config/api';
 
 export default function StatisticsChart() {
   const [loading, setLoading] = useState(true);
@@ -16,7 +17,7 @@ export default function StatisticsChart() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(
-        "http://localhost:5000/api/getDashboardVisualizations",
+        getApiUrl("/getDashboardVisualizations"),
         {
           headers: {
             Authorization: `Bearer ${token}`,

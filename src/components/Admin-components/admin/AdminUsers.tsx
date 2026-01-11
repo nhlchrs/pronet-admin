@@ -4,6 +4,7 @@ import { Search, Eye, Ban, CheckCircle, XCircle, Mail, Phone, X, Network } from 
 import { useAuth } from '../../../context/AuthContext';
 import { useConfirmation } from '../../../hooks/useConfirmation';
 import { toast } from 'sonner';
+import { getApiUrl } from '../../../config/api';
 
 interface User {
   _id: string;
@@ -53,7 +54,7 @@ export default function AdminUsers() {
       setError(null);
       console.log('Fetching users with token:', token);
       const response = await axios.get(
-        'http://localhost:5000/api/allusers',
+        getApiUrl('/allusers'),
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -91,7 +92,7 @@ export default function AdminUsers() {
 
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/users/${userId}/suspend-status`,
+        getApiUrl(`/users/${userId}/suspend-status`),
         {
           isSuspended: true,
           suspensionReason: reason,
@@ -126,7 +127,7 @@ export default function AdminUsers() {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/admin/user/${userId}/reactivate`,
+        getApiUrl(`/admin/user/${userId}/reactivate`),
         {},
         {
           headers: { Authorization: `Bearer ${token}` },

@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Network, Search, Users, TrendingUp, Award } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { getApiUrl } from '../config/api';
 
 // Card components
 const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
@@ -46,7 +47,7 @@ export const ReferralManagementPage = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://localhost:5000/api/admin/users?search=${searchTerm}`,
+        getApiUrl(`/admin/users?search=${searchTerm}`),
         { headers: { Authorization: `Bearer ${token}` } }
       );
       // Response structure: { status, message, data: { users, pagination } }
@@ -65,7 +66,7 @@ export const ReferralManagementPage = () => {
     
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/team/referral/stats/${selectedUserId}`,
+        getApiUrl(`/team/referral/stats/${selectedUserId}`),
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setStats(response.data);

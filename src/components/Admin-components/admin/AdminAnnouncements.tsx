@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Plus, Search, Edit2, Trash2, Eye, X } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { toast } from 'sonner';
+import { getApiUrl } from '../../../config/api';
 
 interface Announcement {
   _id: string;
@@ -76,7 +77,7 @@ export default function AdminAnnouncements() {
       setError(null);
       console.log('Fetching announcements with token:', token);
       const response = await axios.get(
-        'http://localhost:5000/api/announcements',
+        getApiUrl('/announcements'),
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -123,7 +124,7 @@ export default function AdminAnnouncements() {
       if (isEditing && selectedAnnouncement) {
         // Update announcement
         const response = await axios.put(
-          `http://localhost:5000/api/announcements/${selectedAnnouncement._id}`,
+          getApiUrl(`/announcements/${selectedAnnouncement._id}`),
           payload,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -140,7 +141,7 @@ export default function AdminAnnouncements() {
       } else {
         // Create announcement
         const response = await axios.post(
-          'http://localhost:5000/api/announcements',
+          getApiUrl('/announcements'),
           payload,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -166,7 +167,7 @@ export default function AdminAnnouncements() {
 
     try {
       const response = await axios.delete(
-        `http://localhost:5000/api/announcements/${id}`,
+        getApiUrl(`/announcements/${id}`),
         {
           headers: { Authorization: `Bearer ${token}` },
         }

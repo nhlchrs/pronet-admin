@@ -7,6 +7,7 @@ import {
   GroupIcon,
 } from "../../icons";
 import Badge from "../ui/badge/Badge";
+import { getApiUrl } from '../../config/api';
 
 export default function EcommerceMetrics() {
   const [metrics, setMetrics] = useState<any>(null);
@@ -20,7 +21,7 @@ export default function EcommerceMetrics() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(
-        "http://localhost:5000/api/getUserPlatformMetrics",
+        getApiUrl("/getUserPlatformMetrics"),
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -5,6 +5,7 @@ import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { MoreDotIcon } from "../../icons";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { getApiUrl } from '../../config/api';
 
 export default function MonthlySalesChart() {
   const [loading, setLoading] = useState(true);
@@ -18,7 +19,7 @@ export default function MonthlySalesChart() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(
-        "http://localhost:5000/api/getDashboardVisualizations",
+        getApiUrl("/getDashboardVisualizations"),
         {
           headers: {
             Authorization: `Bearer ${token}`,

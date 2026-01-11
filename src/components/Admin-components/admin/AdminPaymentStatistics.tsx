@@ -5,6 +5,7 @@ import { Button } from '../components/ui/button';
 import { CreditCard, TrendingUp, CheckCircle, Clock, XCircle, DollarSign } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { toast } from 'sonner';
+import { getApiUrl } from '../../../config/api';
 
 interface PaymentStats {
   totalPayments: number;
@@ -39,7 +40,7 @@ export default function AdminPaymentStatistics() {
       console.log('Fetching payment statistics with token:', token);
 
       const response = await axios.get(
-        'http://localhost:5000/api/payments/admin/statistics',
+        getApiUrl('/payments/admin/statistics'),
         {
           headers: { Authorization: `Bearer ${token}` },
         }

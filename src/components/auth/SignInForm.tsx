@@ -2,6 +2,7 @@ import { useState, FormEvent, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router";
 import { EyeCloseIcon, EyeIcon } from "../../icons";
+import { getApiUrl } from "../../config/api";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
@@ -40,7 +41,7 @@ export default function SignInForm() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/login",
+        getApiUrl("/login"),
         { email, password }
       );
 
@@ -90,7 +91,7 @@ export default function SignInForm() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/verify",
+        getApiUrl("/verify"),
         { email, otp }
       );
 

@@ -26,10 +26,14 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       auth: {
         token,
       },
+      transports: ['polling', 'websocket'],
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
       reconnectionAttempts: 5,
+      timeout: 20000,
+      forceNew: true, // Force new connection to avoid session issues
+      autoConnect: true,
     });
 
     // Connection events
@@ -45,6 +49,19 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
 
     newSocket.on('connect_error', (error) => {
       console.error('Admin Socket connection error:', error);
+      setIsConnected(false);
+    });
+
+    newSocket.on('error', (error) => {
+      console.error('Admin Socket error:', error);
+    });
+
+    newSocket.on('reconnect_attempt', (attemptNumber) => {
+      console.log(`🔄 Reconnection attempt ${attemptNumber}`);
+    });
+
+    newSocket.on('reconnect_failed', () => {
+      console.error('❌ Reconnection failed after all attempts');
     });
 
     setSocket(newSocket);

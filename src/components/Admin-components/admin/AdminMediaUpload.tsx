@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Upload, Video, FileText, Trash2, Eye, X, Loader2 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { toast } from 'sonner';
+import { getApiUrl } from '../../../config/api';
 
 interface SecureMedia {
   _id: string;
@@ -57,7 +58,7 @@ export default function AdminMediaUpload() {
       const params: any = {};
       if (filterType !== 'all') params.type = filterType;
 
-      const response = await axios.get('http://localhost:5000/api/secure-media', {
+      const response = await axios.get(getApiUrl('/secure-media'), {
         headers: { Authorization: `Bearer ${token}` },
         params,
       });
@@ -118,7 +119,7 @@ export default function AdminMediaUpload() {
       uploadFormData.append('accessLevel', formData.accessLevel);
 
       const response = await axios.post(
-        'http://localhost:5000/api/secure-media/upload',
+        getApiUrl('/secure-media/upload'),
         uploadFormData,
         {
           headers: {
@@ -163,7 +164,7 @@ export default function AdminMediaUpload() {
     }
 
     try {
-      await axios.delete(`http://localhost:5000/api/secure-media/${id}`, {
+      await axios.delete(getApiUrl(`/secure-media/${id}`), {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success('Media deleted successfully');
@@ -457,14 +458,14 @@ export default function AdminMediaUpload() {
                   autoPlay
                 >
                   <source 
-                    src={`http://localhost:5000/api/secure-media/${selectedMedia._id}/stream?token=${token}`}
+                    src={getApiUrl(`/secure-media/${selectedMedia._id}/stream?token=${token}`)}
                     type={selectedMedia.mimeType}
                   />
                   Your browser does not support video playback.
                 </video>
               ) : (
                 <iframe
-                  src={`http://localhost:5000/api/secure-media/${selectedMedia._id}/stream?token=${token}`}
+                  src={getApiUrl(`/secure-media/${selectedMedia._id}/stream?token=${token}`)}
                   className="w-full h-[600px] rounded-lg"
                   title={selectedMedia.title}
                 />

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Plus, Search, Edit2, Trash2, Eye, X, Calendar, Users, Clock } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { useConfirmation } from '../../../hooks/useConfirmation';
+import { getApiUrl } from '../../../config/api';
 import { toast } from 'sonner';
 
 interface Meeting {
@@ -81,7 +82,7 @@ export default function AdminMeetings() {
       setError(null);
       console.log('Fetching meetings with token:', token);
       const response = await axios.get(
-        'http://localhost:5000/api/admin/meetings',
+        getApiUrl('/admin/meetings'),
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -133,7 +134,7 @@ export default function AdminMeetings() {
       if (isEditing && selectedMeeting) {
         // Update meeting
         const response = await axios.put(
-          `http://localhost:5000/api/admin/meeting/${selectedMeeting._id}`,
+          getApiUrl(`/admin/meeting/${selectedMeeting._id}`),
           payload,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -149,7 +150,7 @@ export default function AdminMeetings() {
       } else {
         // Create meeting
         const response = await axios.post(
-          'http://localhost:5000/api/admin/meeting/create',
+          getApiUrl('/admin/meeting/create'),
           payload,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -186,7 +187,7 @@ export default function AdminMeetings() {
 
     try {
       const response = await axios.delete(
-        `http://localhost:5000/api/admin/meeting/${id}`,
+        getApiUrl(`/admin/meeting/${id}`),
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -206,7 +207,7 @@ export default function AdminMeetings() {
   const handleStartMeeting = async (meetingId: string) => {
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/admin/meeting/${meetingId}/start`,
+        getApiUrl(`/admin/meeting/${meetingId}/start`),
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -225,7 +226,7 @@ export default function AdminMeetings() {
   const handleEndMeeting = async (meetingId: string) => {
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/admin/meeting/${meetingId}/end`,
+        getApiUrl(`/admin/meeting/${meetingId}/end`),
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
