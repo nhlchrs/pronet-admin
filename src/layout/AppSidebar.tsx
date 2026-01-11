@@ -28,18 +28,18 @@ const navItems: NavItem[] = [
   ],
 },
 
-{
-  icon: <GridIcon />,
-  name: "Affiliate Management",
-  subItems: [
-    { name: "Affiliates", path: "/admin/affiliates", pro: false },
-    { name: "KYC Verification", path: "/admin/kyc", pro: false },
-    { name: "Applications", path: "/admin/applications", pro: false },
-    { name: "Blocked Affiliates", path: "/admin/blocked", pro: false },
-    { name: "Network", path: "/admin/network", pro: false },
-    { name: "Affiliate Tree", path: "/admin/tree", pro: false },
-  ],
-},
+// {
+//   icon: <GridIcon />,
+//   name: "Affiliate Management",
+//   subItems: [
+//     { name: "Affiliates", path: "/admin/affiliates", pro: false },
+//     { name: "KYC Verification", path: "/admin/kyc", pro: false },
+//     { name: "Applications", path: "/admin/applications", pro: false },
+//     { name: "Blocked Affiliates", path: "/admin/blocked", pro: false },
+//     { name: "Network", path: "/admin/network", pro: false },
+//     { name: "Affiliate Tree", path: "/admin/tree", pro: false },
+//   ],
+// },
 
 {
   icon: <GridIcon />,
@@ -66,18 +66,18 @@ const navItems: NavItem[] = [
   ],
 },
 
-{
-  icon: <GridIcon />,
-  name: "Finance",
-  subItems: [
-    { name: "Finance", path: "/admin/finance", pro: false },
-    { name: "Payment Statistics", path: "/admin/payment-statistics", pro: false },
-    { name: "Bonus Structure", path: "/admin/bonus", pro: false },
-    { name: "Withdrawals", path: "/admin/withdrawals", pro: false },
-    { name: "EPins", path: "/admin/epins", pro: false },
-    { name: "Wallets", path: "/admin/wallets", pro: false },
-  ],
-},
+// {
+//   icon: <GridIcon />,
+//   name: "Finance",
+//   subItems: [
+//     { name: "Finance", path: "/admin/finance", pro: false },
+//     { name: "Payment Statistics", path: "/admin/payment-statistics", pro: false },
+//     { name: "Bonus Structure", path: "/admin/bonus", pro: false },
+//     { name: "Withdrawals", path: "/admin/withdrawals", pro: false },
+//     { name: "EPins", path: "/admin/epins", pro: false },
+//     { name: "Wallets", path: "/admin/wallets", pro: false },
+//   ],
+// },
 
 {
   icon: <GridIcon />,
@@ -85,18 +85,18 @@ const navItems: NavItem[] = [
   subItems: [
     { name: "Announcements", path: "/admin/announcements", pro: false },
     { name: "Download Center", path: "/admin/downloads", pro: false },
-    { name: "Support Tickets", path: "/admin/support", pro: false },
+    // { name: "Support Tickets", path: "/admin/support", pro: false },
   ],
 },
 
-{
-  icon: <GridIcon />,
-  name: "System",
-  subItems: [
-    { name: "Permissions", path: "/admin/permissions", pro: false },
-    { name: "Settings", path: "/admin/settings", pro: false },
-  ],
-},
+// {
+//   icon: <GridIcon />,
+//   name: "System",
+//   subItems: [
+//     { name: "Permissions", path: "/admin/permissions", pro: false },
+//     { name: "Settings", path: "/admin/settings", pro: false },
+//   ],
+// },
 
 
 ];
