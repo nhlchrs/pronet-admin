@@ -16,6 +16,7 @@ import {
   Layers
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import PageMeta from '../../../components/common/PageMeta';
 import {
   Select,
   SelectContent,
@@ -59,7 +60,11 @@ const NetworkManagement = () => {
   };
 
   return (
-    <div>
+    <>
+      <PageMeta 
+        title="Network Management - ProNext Admin Panel" 
+        description="Manage and monitor network structure" 
+      />
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Network Management</h1>
@@ -326,7 +331,8 @@ const NetworkManagement = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </div>  );
+    </>
+  );
 };
 
 export default NetworkManagement;

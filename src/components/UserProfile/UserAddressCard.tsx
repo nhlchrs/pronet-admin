@@ -3,12 +3,39 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
+import { useAuth } from "../../context/AuthContext";
+import { getApiUrl } from "../../config/api";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { toast } from "sonner";
 
 export default function UserAddressCard() {
   const { isOpen, openModal, closeModal } = useModal();
+  const { token } = useAuth();
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await axios.get(getApiUrl('/user/profile'), {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setProfile(response.data.data);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      toast.error('Failed to load profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSave = () => {
-    // Handle save logic here
-    console.log("Saving changes...");
+    // Address functionality can be added later
+    toast.info('Address update feature coming soon');
     closeModal();
   };
   return (
@@ -21,39 +48,12 @@ export default function UserAddressCard() {
             </h4>
 
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
-              <div>
+              <div className="col-span-2">
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Country
+                  Full Address
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  United States.
-                </p>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  City/State
-                </p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  Phoenix, Arizona, United States.
-                </p>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Postal Code
-                </p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  ERT 2489
-                </p>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  TAX ID
-                </p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  AS4568384
+                  {loading ? 'Loading...' : profile?.address || 'Not provided'}
                 </p>
               </div>
             </div>

@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { 
   Search, ZoomIn, ZoomOut, Download, RefreshCw, Network, GitFork
 } from 'lucide-react';
+import PageMeta from '../../../components/common/PageMeta';
 import {
   Select,
   SelectContent,
@@ -95,7 +96,11 @@ const AffiliateTree = () => {
   }, [treeType]);
 
   return (
-    <div>
+    <>
+      <PageMeta 
+        title="Affiliate Tree - ProNext Admin Panel" 
+        description="View and analyze affiliate hierarchy" 
+      />
       <div className="space-y-6">
      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
   <h1 className="text-2xl font-bold text-center sm:text-left">
@@ -333,7 +338,8 @@ const AffiliateTree = () => {
           </DialogContent>
         </Dialog>
       </div>
-    </div>  );
+    </>
+  );
 };
 
 export default AffiliateTree;

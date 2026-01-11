@@ -9,6 +9,7 @@ import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../../../context/AuthContext';
 import { useSocket } from '../../../context/SocketContext';
 import { getApiUrl } from '../../../config/api';
+import PageMeta from '../../../components/common/PageMeta';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -71,32 +72,32 @@ const AdminDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      // Fetch users data
-      const usersResponse = await axios.get(getApiUrl('/admin/users'), {
+      // Fetch users data - use /allusers endpoint to get all users without pagination
+      const usersResponse = await axios.get(getApiUrl('/allusers'), {
         headers: { Authorization: `Bearer ${token}` },
       });
       
       console.log('Users Response:', usersResponse.data);
       
       let users = [];
-      // API returns { users, pagination }
-      if (usersResponse.data.users && Array.isArray(usersResponse.data.users)) {
-        users = usersResponse.data.users;
+      // Handle different response formats
+      if (usersResponse.data.data && Array.isArray(usersResponse.data.data)) {
+        users = usersResponse.data.data;
       } else if (Array.isArray(usersResponse.data)) {
         users = usersResponse.data;
-      } else if (usersResponse.data.data && Array.isArray(usersResponse.data.data)) {
-        users = usersResponse.data.data;
+      } else if (usersResponse.data.users && Array.isArray(usersResponse.data.users)) {
+        users = usersResponse.data.users;
       }
       
       console.log('Parsed Users:', users);
       
       const totalUsers = users.length;
-      const activeUsers = users.filter((u: any) => !u.isSuspended).length;
+      const activeUsers = users.filter((u: any) => !u.isSuspended && !u.isBlocked).length;
       const suspendedUsers = users.filter((u: any) => u.isSuspended).length;
       const totalRevenue = users.filter((u: any) => u.subscriptionStatus).length * 100;
 
-      // Get recent users (last 4)
-      const recent = users.slice(-4).reverse();
+      // Get recent users (last 5)
+      const recent = users.slice(-5).reverse();
       setRecentUsers(recent);
 
       // Fetch meetings data
@@ -198,6 +199,11 @@ const AdminDashboard = () => {
   };
 
   return (
+    <>
+      <PageMeta
+        title="Dashboard - ProNext Admin Panel"
+        description="Admin dashboard with analytics and user statistics"
+      />
     <div className="space-y-6">
       {/* Debug Info */}
       <div className="p-4 bg-blue-50 dark:bg-blue-900 rounded-lg">
@@ -576,6 +582,7 @@ const AdminDashboard = () => {
         </Card>
       </div>
     </div>
+    </>
   );
 };
 

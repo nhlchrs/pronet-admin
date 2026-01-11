@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import PageMeta from '../../../components/common/PageMeta';
 import { 
   BarChart, 
   Bar, 
@@ -86,7 +87,11 @@ const AdminReports = () => {
   ];
   
   return (
-    <div>
+    <>
+      <PageMeta 
+        title="Reports & Analytics - ProNext Admin Panel" 
+        description="Generate and view comprehensive reports" 
+      />
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Reports & Analytics</h1>
@@ -450,7 +455,8 @@ const AdminReports = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </div>  );
+    </>
+  );
 };
 
 export default AdminReports;

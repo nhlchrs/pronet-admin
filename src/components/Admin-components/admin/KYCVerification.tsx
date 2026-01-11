@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { getApiUrl } from '../../../config/api';
 import { Badge } from '@/components/ui/badge';
+import PageMeta from '../../../components/common/PageMeta';
 import {
   Select,
   SelectContent,
@@ -243,7 +244,11 @@ const KYCVerification = () => {
   };
 
   return (
-    <div>
+    <>
+      <PageMeta 
+        title="KYC Verification - ProNext Admin Panel" 
+        description="Review and verify user KYC documents" 
+      />
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">KYC Verification</h1>
@@ -627,7 +632,8 @@ const KYCVerification = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>  );
+    </>
+  );
 };
 
 export default KYCVerification;

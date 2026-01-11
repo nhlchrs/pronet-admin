@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
@@ -8,18 +8,38 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { 
   Settings, Globe, Mail, Bell, Shield, CreditCard, 
-  Smartphone, PaintBucket, BookOpen, Save
+  Smartphone, PaintBucket, BookOpen, Save, User, Lock
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '../../../context/AuthContext';
+import { getApiUrl } from '../../../config/api';
+import axios from 'axios';
+import { toast as sonnerToast } from 'sonner';
+import PageMeta from '../../../components/common/PageMeta';
 
 const AdminSettings = () => {
   const { toast } = useToast();
+  const { token, user, setAuthState } = useAuth();
+  const [loading, setLoading] = useState(true);
+  
+  // Profile/Account Settings
+  const [profile, setProfile] = useState<any>(null);
+  const [fname, setFname] = useState('');
+  const [lname, setLname] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  
+  // Password Change
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   // General Settings
-  const [websiteName, setWebsiteName] = useState('Pro Net Solutions');
+  const [websiteName, setWebsiteName] = useState('ProNext Solutions');
   const [websiteTagline, setWebsiteTagline] = useState('The Future of Affiliate Marketing & Network Growth');
-  const [adminEmail, setAdminEmail] = useState('admin@pronetsolutions.com');
-  const [supportEmail, setSupportEmail] = useState('support@pronetsolutions.com');
+  const [adminEmail, setAdminEmail] = useState('admin@pronext.com');
+  const [supportEmail, setSupportEmail] = useState('support@pronext.com');
   const [maintenance, setMaintenance] = useState(false);
   
   // Affiliate Settings
@@ -31,14 +51,102 @@ const AdminSettings = () => {
   // Email Settings
   const [smtpHost, setSmtpHost] = useState('smtp.example.com');
   const [smtpPort, setSmtpPort] = useState('587');
-  const [smtpUsername, setSmtpUsername] = useState('notifications@pronetsolutions.com');
+  const [smtpUsername, setSmtpUsername] = useState('notifications@pronext.com');
   const [smtpPassword, setSmtpPassword] = useState('********');
-  const [senderName, setSenderName] = useState('Pro Net Solutions');
+  const [senderName, setSenderName] = useState('ProNext Solutions');
   
   // Notification Settings
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [smsNotifications, setSmsNotifications] = useState(false);
   const [adminAlerts, setAdminAlerts] = useState(true);
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await axios.get(getApiUrl('/user/profile'), {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const userData = response.data.data;
+      setProfile(userData);
+      setFname(userData.fname || '');
+      setLname(userData.lname || '');
+      setEmail(userData.email || '');
+      setPhone(userData.phone || '');
+      setAddress(userData.address || '');
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      sonnerToast.error('Failed to load profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveAccountSettings = async () => {
+    try {
+      const response = await axios.put(getApiUrl('/user/update-profile'), {
+        fname,
+        lname,
+        email,
+        phone,
+        address
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const updatedUser = response.data.data;
+      setAuthState({
+        id: updatedUser._id,
+        name: `${updatedUser.fname} ${updatedUser.lname}`,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        phone: updatedUser.phone
+      }, token);
+
+      sonnerToast.success('Account settings updated successfully');
+      fetchProfile();
+    } catch (error: any) {
+      console.error('Error updating account:', error);
+      sonnerToast.error(error.response?.data?.message || 'Failed to update account settings');
+    }
+  };
+
+  const changePassword = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      sonnerToast.error('Please fill in all password fields');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      sonnerToast.error('New passwords do not match');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      sonnerToast.error('New password must be at least 6 characters');
+      return;
+    }
+
+    try {
+      await axios.post(getApiUrl('/user/change-password'), {
+        currentPassword,
+        newPassword,
+        confirmPassword
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      sonnerToast.success('Password changed successfully');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error: any) {
+      console.error('Error changing password:', error);
+      sonnerToast.error(error.response?.data?.message || 'Failed to change password');
+    }
+  };
   
   // Save settings
   const saveSettings = () => {
@@ -49,7 +157,11 @@ const AdminSettings = () => {
   };
 
   return (
-    <div>
+    <>
+      <PageMeta 
+        title="Settings - ProNext Admin Panel" 
+        description="Configure system settings and preferences" 
+      />
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">System Settings</h1>
@@ -59,11 +171,19 @@ const AdminSettings = () => {
           </Button>
         </div>
         
-        <Tabs defaultValue="general">
+        <Tabs defaultValue="account">
           <div className="flex flex-col md:flex-row gap-6">
             <Card className="md:w-64 flex-shrink-0">
               <CardContent className="p-0">
                 <TabsList className="flex flex-col w-full h-auto rounded-none">
+                  <TabsTrigger value="account" className="justify-start px-4 py-3">
+                    <User className="mr-2 h-4 w-4" />
+                    Account
+                  </TabsTrigger>
+                  <TabsTrigger value="security" className="justify-start px-4 py-3">
+                    <Lock className="mr-2 h-4 w-4" />
+                    Security
+                  </TabsTrigger>
                   <TabsTrigger value="general" className="justify-start px-4 py-3">
                     <Settings className="mr-2 h-4 w-4" />
                     General
@@ -97,6 +217,145 @@ const AdminSettings = () => {
             </Card>
             
             <div className="flex-1">
+              <TabsContent value="account" className="m-0">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <User className="mr-2 h-5 w-5" />
+                      Account Settings
+                    </CardTitle>
+                    <CardDescription>
+                      Manage your admin account information.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {loading ? (
+                      <div className="text-center py-8">Loading...</div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="fname">First Name</Label>
+                          <Input 
+                            id="fname" 
+                            value={fname} 
+                            onChange={(e) => setFname(e.target.value)} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="lname">Last Name</Label>
+                          <Input 
+                            id="lname" 
+                            value={lname} 
+                            onChange={(e) => setLname(e.target.value)} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="email">Email Address</Label>
+                          <Input 
+                            id="email" 
+                            type="email" 
+                            value={email} 
+                            onChange={(e) => setEmail(e.target.value)} 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="phone">Phone Number</Label>
+                          <Input 
+                            id="phone" 
+                            type="tel" 
+                            value={phone} 
+                            onChange={(e) => setPhone(e.target.value)} 
+                          />
+                        </div>
+                        <div className="space-y-2 col-span-2">
+                          <Label htmlFor="address">Address</Label>
+                          <Input 
+                            id="address" 
+                            value={address} 
+                            onChange={(e) => setAddress(e.target.value)} 
+                          />
+                        </div>
+                        <div className="col-span-2">
+                          <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-md">
+                            <div className="flex items-center gap-2 text-sm">
+                              <Shield className="h-4 w-4 text-blue-500" />
+                              <span className="font-medium">Role:</span>
+                              <span className="text-gray-600 dark:text-gray-400">{profile?.role || 'Admin'}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                  <CardFooter>
+                    <Button onClick={saveAccountSettings} disabled={loading}>
+                      <Save className="mr-2 h-4 w-4" />
+                      Save Account Settings
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="security" className="m-0">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Lock className="mr-2 h-5 w-5" />
+                      Security Settings
+                    </CardTitle>
+                    <CardDescription>
+                      Change your password and manage security settings.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="currentPassword">Current Password</Label>
+                        <Input 
+                          id="currentPassword" 
+                          type="password" 
+                          value={currentPassword} 
+                          onChange={(e) => setCurrentPassword(e.target.value)}
+                          placeholder="Enter your current password"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="newPassword">New Password</Label>
+                        <Input 
+                          id="newPassword" 
+                          type="password" 
+                          value={newPassword} 
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="Enter new password (min 6 characters)"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                        <Input 
+                          id="confirmPassword" 
+                          type="password" 
+                          value={confirmPassword} 
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="Confirm new password"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md mt-4">
+                      <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                        <strong>Note:</strong> After changing your password, you'll need to log in again with your new credentials.
+                      </p>
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button onClick={changePassword}>
+                      <Lock className="mr-2 h-4 w-4" />
+                      Change Password
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </TabsContent>
+
               <TabsContent value="general" className="m-0">
                 <Card>
                   <CardHeader>
@@ -459,7 +718,8 @@ const AdminSettings = () => {
           </div>
         </Tabs>
       </div>
-    </div>  );
+    </>
+  );
 };
 
 export default AdminSettings;

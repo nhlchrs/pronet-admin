@@ -4,6 +4,7 @@ import { Upload, Video, FileText, Trash2, Eye, X, Loader2 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { toast } from 'sonner';
 import { getApiUrl } from '../../../config/api';
+import PageMeta from '../../../components/common/PageMeta';
 
 interface SecureMedia {
   _id: string;
@@ -187,7 +188,12 @@ export default function AdminMediaUpload() {
   });
 
   return (
-    <div className="p-6">
+    <>
+      <PageMeta 
+        title="Media Library - ProNext Admin Panel" 
+        description="Upload and manage secure media files including videos and PDFs" 
+      />
+      <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Secure Media Upload</h1>
@@ -496,5 +502,6 @@ export default function AdminMediaUpload() {
         </div>
       )}
     </div>
+    </>
   );
 }

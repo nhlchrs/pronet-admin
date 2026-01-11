@@ -12,6 +12,7 @@ import {
   Filter, Clock, CheckCircle, AlertCircle
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import PageMeta from '../../../components/common/PageMeta';
 import {
   Select,
   SelectContent,
@@ -224,7 +225,11 @@ const SupportTickets = () => {
   };
 
   return (
-    <div>
+    <>
+      <PageMeta 
+        title="Support Tickets - ProNext Admin Panel" 
+        description="Manage and respond to support tickets" 
+      />
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Support Tickets</h1>
@@ -498,7 +503,8 @@ const SupportTickets = () => {
           </DialogContent>
         )}
       </Dialog>
-    </div>  );
+    </>
+  );
 };
 
 export default SupportTickets;

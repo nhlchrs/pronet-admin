@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useAuth } from "../../../context/AuthContext";
 import { useToast } from '@/hooks/use-toast';
+import PageMeta from '../../../components/common/PageMeta';
 import {
   Search,
   ChevronDown,
@@ -288,7 +289,12 @@ const TeamManagement = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <>
+      <PageMeta 
+        title="Team Management - ProNext Admin Panel" 
+        description="Manage team structure and hierarchy" 
+      />
+      <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
@@ -725,6 +731,7 @@ const TeamManagement = () => {
         </DialogContent>
       </Dialog>
     </div>
+    </>
   );
 };
 

@@ -6,6 +6,7 @@ import { CreditCard, TrendingUp, CheckCircle, Clock, XCircle, DollarSign } from 
 import { useAuth } from '../../../context/AuthContext';
 import { toast } from 'sonner';
 import { getApiUrl } from '../../../config/api';
+import PageMeta from '../../../components/common/PageMeta';
 
 interface PaymentStats {
   totalPayments: number;
@@ -95,7 +96,12 @@ export default function AdminPaymentStatistics() {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <>
+      <PageMeta 
+        title="Payment Statistics - ProNext Admin Panel" 
+        description="View and analyze payment statistics" 
+      />
+      <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Payment Statistics</h1>
@@ -273,5 +279,6 @@ export default function AdminPaymentStatistics() {
         </>
       )}
     </div>
+    </>
   );
 }

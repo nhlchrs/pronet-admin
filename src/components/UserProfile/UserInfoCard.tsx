@@ -3,13 +3,76 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
+import { useAuth } from "../../context/AuthContext";
+import { getApiUrl } from "../../config/api";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { toast } from "sonner";
 
 export default function UserInfoCard() {
   const { isOpen, openModal, closeModal } = useModal();
-  const handleSave = () => {
-    // Handle save logic here
-    console.log("Saving changes...");
-    closeModal();
+  const { token, setAuthState } = useAuth();
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [formData, setFormData] = useState({
+    fname: "",
+    lname: "",
+    email: "",
+    phone: "",
+    address: "",
+    dob: ""
+  });
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await axios.get(getApiUrl('/user/profile'), {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const userData = response.data.data;
+      setProfile(userData);
+      setFormData({
+        fname: userData.fname || "",
+        lname: userData.lname || "",
+        email: userData.email || "",
+        phone: userData.phone || "",
+        address: userData.address || "",
+        dob: userData.dob ? new Date(userData.dob).toISOString().split('T')[0] : ""
+      });
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      toast.error('Failed to load profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const response = await axios.put(getApiUrl('/user/update-profile'), formData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const updatedUser = response.data.data;
+      
+      // Update auth context
+      setAuthState({
+        id: updatedUser._id,
+        name: `${updatedUser.fname} ${updatedUser.lname}`,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        phone: updatedUser.phone
+      }, token);
+      
+      toast.success('Profile updated successfully');
+      fetchProfile();
+      closeModal();
+    } catch (error: any) {
+      console.error('Error updating profile:', error);
+      toast.error(error.response?.data?.message || 'Failed to update profile');
+    }
   };
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
@@ -25,7 +88,7 @@ export default function UserInfoCard() {
                 First Name
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Musharof
+                {loading ? 'Loading...' : profile?.fname || 'N/A'}
               </p>
             </div>
 
@@ -34,7 +97,7 @@ export default function UserInfoCard() {
                 Last Name
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Chowdhury
+                {loading ? 'Loading...' : profile?.lname || 'N/A'}
               </p>
             </div>
 
@@ -43,7 +106,7 @@ export default function UserInfoCard() {
                 Email address
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                randomuser@pimjo.com
+                {loading ? 'Loading...' : profile?.email || 'N/A'}
               </p>
             </div>
 
@@ -52,16 +115,16 @@ export default function UserInfoCard() {
                 Phone
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                +09 363 398 46
+                {loading ? 'Loading...' : profile?.phone || 'N/A'}
               </p>
             </div>
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Bio
+                Role
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Team Manager
+                {loading ? 'Loading...' : profile?.role || 'N/A'}
               </p>
             </div>
           </div>
@@ -143,12 +206,56 @@ export default function UserInfoCard() {
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-1">
                     <Label>First Name</Label>
-                    <Input type="text" value="Musharof" />
+                    <Input 
+                      type="text" 
+                      value={formData.fname}
+                      onChange={(e) => setFormData({...formData, fname: e.target.value})}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Last Name</Label>
-                    <Input type="text" value="Chowdhury" />
+                    <Input 
+                      type="text" 
+                      value={formData.lname}
+                      onChange={(e) => setFormData({...formData, lname: e.target.value})}
+                    />
+                  </div>
+
+                  <div className="col-span-2 lg:col-span-1">
+                    <Label>Email</Label>
+                    <Input 
+                      type="email" 
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    />
+                  </div>
+
+                  <div className="col-span-2 lg:col-span-1">
+                    <Label>Phone</Label>
+                    <Input 
+                      type="tel" 
+                      value={formData.phone}
+                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    />
+                  </div>
+
+                  <div className="col-span-2 lg:col-span-1">
+                    <Label>Date of Birth</Label>
+                    <Input 
+                      type="date" 
+                      value={formData.dob}
+                      onChange={(e) => setFormData({...formData, dob: e.target.value})}
+                    />
+                  </div>
+
+                  <div className="col-span-2 lg:col-span-1">
+                    <Label>Address</Label>
+                    <Input 
+                      type="text" 
+                      value={formData.address}
+                      onChange={(e) => setFormData({...formData, address: e.target.value})}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">

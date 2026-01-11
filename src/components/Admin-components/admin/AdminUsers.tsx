@@ -5,6 +5,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { useConfirmation } from '../../../hooks/useConfirmation';
 import { toast } from 'sonner';
 import { getApiUrl } from '../../../config/api';
+import PageMeta from '../../../components/common/PageMeta';
 
 interface User {
   _id: string;
@@ -207,7 +208,12 @@ export default function AdminUsers() {
   }
 
   return (
-    <div className="space-y-6">
+    <>
+      <PageMeta
+        title="Users Management - ProNext Admin Panel"
+        description="Manage and monitor all users in the system"
+      />
+      <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Users Management</h1>
@@ -619,5 +625,6 @@ export default function AdminUsers() {
         </div>
       )}
     </div>
+    </>
   );
 }

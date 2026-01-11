@@ -12,6 +12,7 @@ import {
   Trash, RefreshCw, Receipt, CheckCircle, XCircle
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import PageMeta from '../../../components/common/PageMeta';
 import {
   Select,
   SelectContent,
@@ -212,7 +213,11 @@ const EpinManagement = () => {
   };
 
   return (
-    <div>
+    <>
+      <PageMeta 
+        title="E-Pin Management - ProNext Admin Panel" 
+        description="Manage E-Pins and voucher codes" 
+      />
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">E-Pin Management</h1>
@@ -657,7 +662,8 @@ const EpinManagement = () => {
           </Card>
         </div>
       </div>
-    </div>  );
+    </>
+  );
 };
 
 export default EpinManagement;

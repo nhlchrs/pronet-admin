@@ -13,6 +13,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import PageMeta from '../../../components/common/PageMeta';
 
 const ManageBonusStructure = () => {
   const { toast } = useToast();
@@ -25,7 +26,11 @@ const ManageBonusStructure = () => {
   };
 
   return (
-    <div>
+    <>
+      <PageMeta 
+        title="Bonus Structure - ProNext Admin Panel" 
+        description="Configure bonus and commission structure" 
+      />
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Bonus Structure Management</h1>
@@ -165,7 +170,8 @@ const ManageBonusStructure = () => {
           </CardContent>
         </Card>
       </div>
-    </div>  );
+    </>
+  );
 };
 
 export default ManageBonusStructure;

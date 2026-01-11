@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import PageMeta from '../../../components/common/PageMeta';
 import {
   Dialog,
   DialogContent,
@@ -156,7 +157,11 @@ const AdminDownloads = () => {
   };
 
   return (
-    <div>
+    <>
+      <PageMeta 
+        title="Downloads - ProNext Admin Panel" 
+        description="Manage downloadable resources and files" 
+      />
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Download Center Management</h1>
@@ -402,7 +407,8 @@ const AdminDownloads = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>  );
+    </>
+  );
 };
 
 export default AdminDownloads;

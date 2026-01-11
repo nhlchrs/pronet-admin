@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, ChangeEvent } from "react";
 import axios from "axios";
 import { useAuth } from "../../../context/AuthContext";
+import PageMeta from '../../../components/common/PageMeta';
 import {
   RefreshCw,
   Eye,
@@ -185,7 +186,12 @@ const ReferralTeamManagement = () => {
   }, [fetchTeamMembers, fetchStatistics]);
 
   return (
-    <div className="space-y-6 p-6">
+    <>
+      <PageMeta 
+        title="Referral Team - ProNext Admin Panel" 
+        description="Manage referral teams and commissions" 
+      />
+      <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
@@ -526,6 +532,7 @@ const ReferralTeamManagement = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

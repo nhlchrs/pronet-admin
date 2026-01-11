@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, UserCheck, Calendar, UserX } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import PageMeta from '../../../components/common/PageMeta';
 import {
   Dialog,
   DialogContent,
@@ -238,7 +239,11 @@ const BlockedAffiliates = () => {
   };
 
   return (
-    <div>
+    <>
+      <PageMeta 
+        title="Blocked Affiliates - ProNext Admin Panel" 
+        description="Manage blocked and suspended affiliates" 
+      />
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-foreground">Affiliate Status Management</h1>
@@ -530,7 +535,8 @@ const BlockedAffiliates = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>  );
+    </>
+  );
 };
 
 export default BlockedAffiliates;

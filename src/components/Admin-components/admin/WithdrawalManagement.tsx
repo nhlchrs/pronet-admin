@@ -11,6 +11,7 @@ import {
   WalletCards, Calendar, Filter, SendHorizontal
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import PageMeta from '../../../components/common/PageMeta';
 import {
   Select,
   SelectContent,
@@ -136,7 +137,11 @@ const WithdrawalManagement = () => {
   };
 
   return (
-    <div>
+    <>
+      <PageMeta 
+        title="Withdrawals - ProNext Admin Panel" 
+        description="Manage and process withdrawal requests" 
+      />
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Withdrawal Management</h1>
@@ -391,7 +396,8 @@ const WithdrawalManagement = () => {
           </DialogContent>
         )}
       </Dialog>
-    </div>  );
+    </>
+  );
 };
 
 export default WithdrawalManagement;

@@ -5,6 +5,7 @@ import { Plus, Search, Edit2, Trash2, Eye, X } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { toast } from 'sonner';
 import { getApiUrl } from '../../../config/api';
+import PageMeta from '../../../components/common/PageMeta';
 
 interface Announcement {
   _id: string;
@@ -265,7 +266,12 @@ export default function AdminAnnouncements() {
   }
 
   return (
-    <div className="space-y-6">
+    <>
+      <PageMeta 
+        title="Announcements - ProNext Admin Panel" 
+        description="Create and manage system-wide announcements" 
+      />
+      <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Announcements</h1>
@@ -725,7 +731,8 @@ export default function AdminAnnouncements() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
 

@@ -8,6 +8,7 @@ import {
   BarChart, DollarSign, Percent, Wallet, UserCheck, 
   UserX, BarChart2, ArrowUp, ArrowDown, Lock
 } from 'lucide-react';
+import PageMeta from '../../../components/common/PageMeta';
 
 const AdminAnalytics = () => {
   // Mock data for charts
@@ -42,7 +43,11 @@ const AdminAnalytics = () => {
   ];
 
   return (
-    <div>
+    <>
+      <PageMeta 
+        title="Analytics - ProNext Admin Panel" 
+        description="View detailed analytics and insights" 
+      />
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Advanced Analytics</h1>
@@ -216,7 +221,8 @@ const AdminAnalytics = () => {
           </CardContent>
         </Card>
       </div>
-    </div>  );
+    </>
+  );
 };
 
 export default AdminAnalytics;

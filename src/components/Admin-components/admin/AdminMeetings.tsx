@@ -5,6 +5,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { useConfirmation } from '../../../hooks/useConfirmation';
 import { getApiUrl } from '../../../config/api';
 import { toast } from 'sonner';
+import PageMeta from '../../../components/common/PageMeta';
 
 interface Meeting {
   _id: string;
@@ -338,7 +339,12 @@ export default function AdminMeetings() {
   }
 
   return (
-    <div className="space-y-6">
+    <>
+      <PageMeta 
+        title="Meetings Management - ProNext Admin Panel" 
+        description="Manage and monitor all meetings and webinars in the system" 
+      />
+      <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Meetings Management</h1>
@@ -819,4 +825,6 @@ export default function AdminMeetings() {
         </div>
       )}
     </div>
-  );}
+    </>
+  );
+}

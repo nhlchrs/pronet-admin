@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Shield, Users, Lock, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import PageMeta from '../../../components/common/PageMeta';
 
 type Role = 'super_admin' | 'admin' | 'manager' | 'support';
 
@@ -136,7 +137,11 @@ const AdminPermissions = () => {
   };
 
   return (
-    <div>
+    <>
+      <PageMeta 
+        title="Permissions - ProNext Admin Panel" 
+        description="Manage role-based access control" 
+      />
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Role Permissions</h1>
@@ -251,7 +256,8 @@ const AdminPermissions = () => {
           </Card>
         </div>
       </div>
-    </div>  );
+    </>
+  );
 };
 
 export default AdminPermissions;

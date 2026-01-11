@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import PageMeta from '../../../components/common/PageMeta';
 import {
   Dialog,
   DialogContent,
@@ -163,7 +164,11 @@ const AdminWallets = () => {
   };
 
   return (
-    <div>
+    <>
+      <PageMeta 
+        title="Wallets - ProNext Admin Panel" 
+        description="Manage user wallets and balances" 
+      />
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Affiliate Wallets</h1>
@@ -495,7 +500,8 @@ const AdminWallets = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>  );
+    </>
+  );
 };
 
 export default AdminWallets;

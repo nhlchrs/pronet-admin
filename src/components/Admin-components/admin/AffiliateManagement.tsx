@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
+import PageMeta from '../../../components/common/PageMeta';
 
 // Mock data for affiliates
 const mockAffiliates = [
@@ -138,7 +139,11 @@ const AffiliateManagement = () => {
   };
 
   return (
-    <div>
+    <>
+      <PageMeta 
+        title="Affiliate Management - ProNext Admin Panel" 
+        description="Manage and monitor all affiliates" 
+      />
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Affiliate Management</h1>
@@ -333,7 +338,7 @@ const AffiliateManagement = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </>
   );
 };
 

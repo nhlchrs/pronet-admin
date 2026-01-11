@@ -5,6 +5,7 @@ import { Network, Search, Users, TrendingUp, Award } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { getApiUrl } from '../config/api';
+import PageMeta from '../components/common/PageMeta';
 
 // Card components
 const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
@@ -93,7 +94,12 @@ export const ReferralManagementPage = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <>
+      <PageMeta 
+        title="Referral Management - ProNext Admin Panel" 
+        description="Manage referrals and team hierarchy" 
+      />
+      <div className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Referral & Team Management</h1>
@@ -258,6 +264,7 @@ export const ReferralManagementPage = () => {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 };
 

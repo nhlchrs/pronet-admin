@@ -11,6 +11,7 @@ import {
   Filter, Calendar, UserPlus
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import PageMeta from '../../../components/common/PageMeta';
 import {
   Select,
   SelectContent,
@@ -148,7 +149,11 @@ const ApplicationManagement = () => {
   };
 
   return (
-    <div>
+    <>
+      <PageMeta 
+        title="Applications - ProNext Admin Panel" 
+        description="Review and manage affiliate applications" 
+      />
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Affiliate Applications</h1>
@@ -392,7 +397,8 @@ const ApplicationManagement = () => {
           </DialogContent>
         )}
       </Dialog>
-    </div>  );
+    </>
+  );
 };
 
 export default ApplicationManagement;

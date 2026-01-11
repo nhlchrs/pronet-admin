@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import ChartCard from '@/components/dashboard/ChartCard';
 import { Input } from '@/components/ui/input';
+import PageMeta from '../../../components/common/PageMeta';
 
 const FinanceManagement = () => {
   const [dateRange, setDateRange] = useState('this-month');
@@ -96,7 +97,11 @@ const FinanceManagement = () => {
   };
 
   return (
-    <div>
+    <>
+      <PageMeta 
+        title="Finance Management - ProNext Admin Panel" 
+        description="Manage financial transactions and payments" 
+      />
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Finance Management</h1>
@@ -274,7 +279,8 @@ const FinanceManagement = () => {
           </CardContent>
         </Card>
       </div>
-    </div>  );
+    </>
+  );
 };
 
 export default FinanceManagement;
