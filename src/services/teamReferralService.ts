@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const API_BASE_URL = typeof window !== 'undefined' ? (window as any).REACT_APP_API_URL || '/api' : '/api';
+import { API_BASE_URL } from '../config/api';
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -159,12 +158,20 @@ export const teamReferralService = {
     return response.data;
   },
 
-  // Get downline structure/hierarchy
-  getDownlineStructure: async (userId: string, depth: number = 5) => {
-    const response = await axiosInstance.get(`/team/downline-structure/${userId}`, {
-      params: { depth },
-    });
-    return response.data;
+  // Get downline structure/hierarchy (Admin version - can view any user)
+  getDownlineStructure: async (userId: string, depth: number = 10) => {
+    try {
+      console.log(`[Service] Fetching downline structure for userId: ${userId}, depth: ${depth}`);
+      // Use admin endpoint for viewing any user's hierarchy
+      const response = await axiosInstance.get(`/admin/team/downline-structure/${userId}`, {
+        params: { depth },
+      });
+      console.log('[Service] Response received:', response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error('[Service] Error fetching downline structure:', error.response?.data || error.message);
+      throw error;
+    }
   },
 };
 
