@@ -7,7 +7,7 @@ export const ConfirmationDialog = () => {
   if (!state.isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-99999 p-4">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[999999] p-4">
       <div className="bg-white dark:bg-gray-900 rounded-lg max-w-sm w-full shadow-lg">
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-lg font-bold text-gray-800 dark:text-white">
