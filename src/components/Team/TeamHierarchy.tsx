@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Loader2, AlertCircle, Users, TrendingUp, Award, DollarSign, ChevronDown, Key } from 'lucide-react';
 import teamReferralService, { setAuthToken } from '../../services/teamReferralService';
 import { useAuth } from '../../context/AuthContext';
+import './OrgChart.css';
 
 // Card and Badge components
 const Card = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
@@ -37,6 +38,74 @@ interface HierarchyNodeProps {
   level: number;
   targetUserId?: string;
 }
+
+interface OrgChartNodeProps {
+  member: any;
+  targetUserId?: string;
+  maxDepth?: number;
+  currentDepth?: number;
+}
+
+const OrgChartNode = ({ member, targetUserId, maxDepth = 5, currentDepth = 0 }: OrgChartNodeProps) => {
+  const hasChildren = member.teamMembers && member.teamMembers.length > 0;
+  const isTargetUser = member.userId?._id === targetUserId || member.isTargetUser;
+
+  if (currentDepth > maxDepth) {
+    return null;
+  }
+
+  const userName = member.userId?.fname && member.userId?.lname 
+    ? `${member.userId.fname} ${member.userId.lname}` 
+    : member.userId?.name || 'Unknown';
+
+  return (
+    <div className="org-node">
+      <div className={`org-node-content ${isTargetUser ? 'target-user' : ''}`}>
+        <div className="org-node-name">
+          {userName}
+          {isTargetUser && <span className="target-badge-org">TARGET</span>}
+          <span className="level-badge-org">L{member.level}</span>
+        </div>
+        {member.userId?.email && (
+          <div className="org-node-email">{member.userId.email}</div>
+        )}
+        {member.referralCode && (
+          <div className="referral-code-org">🔑 {member.referralCode}</div>
+        )}
+        <div className="org-node-stats">
+          <div className="org-stat">
+            <div className="org-stat-value">{member.directCount || 0}</div>
+            <div className="org-stat-label">Direct</div>
+          </div>
+          <div className="org-stat">
+            <div className="org-stat-value">{member.totalDownline || 0}</div>
+            <div className="org-stat-label">Team</div>
+          </div>
+          {member.totalEarnings > 0 && (
+            <div className="org-stat">
+              <div className="org-stat-value">${(member.totalEarnings || 0).toFixed(0)}</div>
+              <div className="org-stat-label">Earned</div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {hasChildren && (
+        <div className={`org-children ${member.teamMembers.length === 1 ? 'single-child' : ''}`}>
+          {member.teamMembers.map((child: any, index: number) => (
+            <OrgChartNode
+              key={child._id || index}
+              member={child}
+              targetUserId={targetUserId}
+              maxDepth={maxDepth}
+              currentDepth={currentDepth + 1}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const HierarchyNode = ({ node, level, targetUserId }: HierarchyNodeProps) => {
   const hasChildren = node.children && node.children.length > 0;
@@ -279,20 +348,25 @@ export const TeamHierarchy = ({ userId, depth = 5 }: TeamHierarchyProps) => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="w-5 h-5" />
-            Complete Team Hierarchy
+            Complete Team Hierarchy - Organizational Chart
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 overflow-x-auto">
-          <HierarchyNode node={hierarchy} level={0} targetUserId={targetUserId} />
+        <CardContent className="overflow-x-auto">
+          <div className="org-chart-container">
+            <div className="org-tree">
+              <OrgChartNode member={hierarchy} targetUserId={targetUserId} maxDepth={5} />
+            </div>
+          </div>
 
           {/* Legend */}
           <div className="mt-6 pt-4 border-t space-y-2 text-sm">
             <p className="font-semibold text-gray-700">Legend:</p>
             <ul className="space-y-1 text-gray-600">
-              <li>• Number in circle = Position in hierarchy (1 = You, 2 = Your directs, etc.)</li>
-              <li>• Vertical lines connect team members to their sponsors</li>
-              <li>• Level = User's achievement level based on direct count</li>
-              <li>• Direct count shown on the right = Number of direct referrals</li>
+              <li>• <span className="font-semibold text-green-600">Green boxes</span> highlight the target user</li>
+              <li>• <span className="font-semibold text-purple-600">Purple boxes</span> represent other team members</li>
+              <li>• Lines connect team members to their sponsors</li>
+              <li>• Level (L) = User's achievement level based on direct count</li>
+              <li>• Direct = Number of direct referrals, Team = Total downline</li>
             </ul>
           </div>
         </CardContent>

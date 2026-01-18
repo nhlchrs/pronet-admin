@@ -1,0 +1,212 @@
+/* Organizational Chart Styles - Admin Panel */
+.org-chart-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  min-width: fit-content;
+  overflow-x: auto;
+}
+
+.org-tree {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.org-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  margin: 10px;
+}
+
+.org-node-content {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 16px 20px;
+  border-radius: 12px;
+  min-width: 200px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.org-node-content:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.org-node-content.target-user {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  animation: pulse-box-admin 2s ease-in-out infinite;
+}
+
+@keyframes pulse-box-admin {
+  0%, 100% {
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  }
+  50% {
+    box-shadow: 0 8px 28px rgba(16, 185, 129, 0.6);
+  }
+}
+
+.org-node-name {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.org-node-email {
+  font-size: 11px;
+  opacity: 0.9;
+  margin-bottom: 8px;
+  word-break: break-all;
+}
+
+.org-node-stats {
+  display: flex;
+  justify-content: space-around;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.org-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 11px;
+}
+
+.org-stat-value {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.org-stat-label {
+  opacity: 0.8;
+  font-size: 9px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.org-children {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 50px;
+  position: relative;
+}
+
+/* Connecting Lines */
+.org-node::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  width: 2px;
+  height: 40px;
+  background: #667eea;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.org-tree > .org-node::before {
+  display: none;
+}
+
+.org-children::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #667eea;
+  z-index: 0;
+  transform: translateY(-1px);
+}
+
+.org-children.single-child::before {
+  display: none;
+}
+
+/* Vertical line from parent to horizontal connector */
+.org-node:has(.org-children)::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 2px;
+  height: 10px;
+  background: #667eea;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+/* Level badges and info */
+.level-badge-org {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.target-badge-org {
+  background: rgba(255, 255, 255, 0.4);
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.referral-code-org {
+  font-size: 10px;
+  opacity: 0.9;
+  margin-top: 4px;
+  font-family: monospace;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .org-children {
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .org-children::before {
+    display: none;
+  }
+
+  .org-node::before {
+    display: none !important;
+  }
+
+  .org-node-content {
+    min-width: 160px;
+    padding: 12px 16px;
+  }
+
+  .org-node-name {
+    font-size: 13px;
+  }
+}
