@@ -35,13 +35,16 @@ const Badge = ({ children, variant = 'default', className = '' }: { children: Re
 interface HierarchyNodeProps {
   node: any;
   level: number;
+  targetUserId?: string;
 }
 
-const HierarchyNode = ({ node, level }: HierarchyNodeProps) => {
+const HierarchyNode = ({ node, level, targetUserId }: HierarchyNodeProps) => {
   const hasChildren = node.children && node.children.length > 0;
   const userName = node.userId?.fname && node.userId?.lname 
     ? `${node.userId.fname} ${node.userId.lname}`
     : node.userId?.email || 'Unknown User';
+  
+  const isTargetUser = node.userId?._id === targetUserId || node.isTargetUser;
 
   return (
     <div className="space-y-2">
@@ -53,9 +56,17 @@ const HierarchyNode = ({ node, level }: HierarchyNodeProps) => {
           borderLeft: level > 0 ? '2px solid #e5e7eb' : 'none',
         }}
       >
-        <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-50 to-indigo-100 rounded-lg border-2 border-purple-200 hover:shadow-lg hover:border-purple-400 transition-all">
+        <div className={`flex items-center gap-3 p-3 rounded-lg border-2 transition-all ${
+          isTargetUser 
+            ? 'bg-gradient-to-r from-green-50 to-emerald-100 border-green-400 shadow-xl ring-2 ring-green-300' 
+            : 'bg-gradient-to-r from-purple-50 to-indigo-100 border-purple-200 hover:shadow-lg hover:border-purple-400'
+        }`}>
           <div className="flex-shrink-0">
-            <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-purple-600 to-indigo-600 text-white rounded-full text-sm font-bold shadow-md">
+            <div className={`flex items-center justify-center w-8 h-8 text-white rounded-full text-sm font-bold shadow-md ${
+              isTargetUser 
+                ? 'bg-gradient-to-br from-green-600 to-emerald-600' 
+                : 'bg-gradient-to-br from-purple-600 to-indigo-600'
+            }`}>
               {level + 1}
             </div>
           </div>
@@ -63,12 +74,21 @@ const HierarchyNode = ({ node, level }: HierarchyNodeProps) => {
             <div className="flex items-center gap-2 flex-wrap">
               <p className="font-semibold text-gray-900">
                 {userName}
+                {isTargetUser && <span className="ml-2 text-xs font-bold text-green-600 bg-green-100 px-2 py-1 rounded">(Target User)</span>}
               </p>
-              <Badge variant="outline" className="text-xs bg-purple-50 border-purple-300 text-purple-700">
+              <Badge variant="outline" className={`text-xs ${
+                isTargetUser 
+                  ? 'bg-green-50 border-green-300 text-green-700' 
+                  : 'bg-purple-50 border-purple-300 text-purple-700'
+              }`}>
                 Level {node.level}
               </Badge>
               {node.referralCode && (
-                <span className="inline-flex items-center gap-1 text-xs text-purple-600 font-medium bg-purple-50 px-2 py-1 rounded border border-purple-200">
+                <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded border ${
+                  isTargetUser 
+                    ? 'text-green-600 bg-green-50 border-green-200' 
+                    : 'text-purple-600 bg-purple-50 border-purple-200'
+                }`}>
                   <Key className="w-3 h-3" />
                   {node.referralCode}
                 </span>
@@ -77,7 +97,7 @@ const HierarchyNode = ({ node, level }: HierarchyNodeProps) => {
             <p className="text-xs text-gray-600">{node.userId?.email}</p>
           </div>
           <div className="flex-shrink-0 text-right">
-            <div className="text-sm font-bold text-purple-600">{node.directCount}</div>
+            <div className={`text-sm font-bold ${isTargetUser ? 'text-green-600' : 'text-purple-600'}`}>{node.directCount}</div>
             <p className="text-xs text-gray-500">directs</p>
           </div>
           {node.totalEarnings > 0 && (
@@ -95,7 +115,7 @@ const HierarchyNode = ({ node, level }: HierarchyNodeProps) => {
       {hasChildren && (
         <div>
           {node.children.map((child: any, idx: number) => (
-            <HierarchyNode key={idx} node={child} level={level + 1} />
+            <HierarchyNode key={idx} node={child} level={level + 1} targetUserId={targetUserId} />
           ))}
         </div>
       )}
@@ -111,6 +131,7 @@ interface TeamHierarchyProps {
 export const TeamHierarchy = ({ userId, depth = 5 }: TeamHierarchyProps) => {
   const { token } = useAuth();
   const [hierarchy, setHierarchy] = useState<any>(null);
+  const [targetUserId, setTargetUserId] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -136,6 +157,7 @@ export const TeamHierarchy = ({ userId, depth = 5 }: TeamHierarchyProps) => {
 
       if (result.success) {
         setHierarchy(result.data.hierarchy);
+        setTargetUserId(result.data.targetUserId || userId);
       } else {
         setError(result.message || 'Failed to load hierarchy');
       }
@@ -257,11 +279,11 @@ export const TeamHierarchy = ({ userId, depth = 5 }: TeamHierarchyProps) => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="w-5 h-5" />
-            Team Hierarchy
+            Complete Team Hierarchy
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 overflow-x-auto">
-          <HierarchyNode node={hierarchy} level={0} />
+          <HierarchyNode node={hierarchy} level={0} targetUserId={targetUserId} />
 
           {/* Legend */}
           <div className="mt-6 pt-4 border-t space-y-2 text-sm">
