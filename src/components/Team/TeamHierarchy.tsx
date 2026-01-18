@@ -47,7 +47,11 @@ interface OrgChartNodeProps {
 }
 
 const OrgChartNode = ({ member, targetUserId, maxDepth = 5, currentDepth = 0 }: OrgChartNodeProps) => {
-  const hasChildren = member.teamMembers && member.teamMembers.length > 0;
+  if (!member) return null;
+  
+  // Support both 'children' (from admin API) and 'teamMembers' (from user API)
+  const children = member.children || member.teamMembers || [];
+  const hasChildren = children && children.length > 0;
   const isTargetUser = member.userId?._id === targetUserId || member.isTargetUser;
 
   if (currentDepth > maxDepth) {
@@ -56,7 +60,7 @@ const OrgChartNode = ({ member, targetUserId, maxDepth = 5, currentDepth = 0 }: 
 
   const userName = member.userId?.fname && member.userId?.lname 
     ? `${member.userId.fname} ${member.userId.lname}` 
-    : member.userId?.name || 'Unknown';
+    : member.userId?.name || member.userId?.email || 'Unknown';
 
   return (
     <div className="org-node">
@@ -91,8 +95,8 @@ const OrgChartNode = ({ member, targetUserId, maxDepth = 5, currentDepth = 0 }: 
       </div>
 
       {hasChildren && (
-        <div className={`org-children ${member.teamMembers.length === 1 ? 'single-child' : ''}`}>
-          {member.teamMembers.map((child: any, index: number) => (
+        <div className={`org-children ${children.length === 1 ? 'single-child' : ''}`}>
+          {children.map((child: any, index: number) => (
             <OrgChartNode
               key={child._id || index}
               member={child}
@@ -108,7 +112,9 @@ const OrgChartNode = ({ member, targetUserId, maxDepth = 5, currentDepth = 0 }: 
 };
 
 const HierarchyNode = ({ node, level, targetUserId }: HierarchyNodeProps) => {
-  const hasChildren = node.children && node.children.length > 0;
+  // Support both 'children' and 'teamMembers' properties
+  const hasChildren = (node.children && node.children.length > 0) || (node.teamMembers && node.teamMembers.length > 0);
+  const children = node.children || node.teamMembers || [];
   const userName = node.userId?.fname && node.userId?.lname 
     ? `${node.userId.fname} ${node.userId.lname}`
     : node.userId?.email || 'Unknown User';
@@ -183,7 +189,7 @@ const HierarchyNode = ({ node, level, targetUserId }: HierarchyNodeProps) => {
       {/* Children */}
       {hasChildren && (
         <div>
-          {node.children.map((child: any, idx: number) => (
+          {children.map((child: any, idx: number) => (
             <HierarchyNode key={idx} node={child} level={level + 1} targetUserId={targetUserId} />
           ))}
         </div>
@@ -202,8 +208,7 @@ export const TeamHierarchy = ({ userId, depth = 5 }: TeamHierarchyProps) => {
   const [hierarchy, setHierarchy] = useState<any>(null);
   const [targetUserId, setTargetUserId] = useState<string>('');
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
+  const [error, setError] = useState('');  const [viewMode, setViewMode] = useState<'tree' | 'org-chart'>('org-chart');
   useEffect(() => {
     if (userId && token) {
       fetchHierarchy();
@@ -346,28 +351,73 @@ export const TeamHierarchy = ({ userId, depth = 5 }: TeamHierarchyProps) => {
       {/* Hierarchy Tree */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5" />
-            Complete Team Hierarchy - Organizational Chart
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <div className="org-chart-container">
-            <div className="org-tree">
-              <OrgChartNode member={hierarchy} targetUserId={targetUserId} maxDepth={5} />
+          <div className="flex justify-between items-center">
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5" />
+              Complete Team Hierarchy
+            </CardTitle>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setViewMode('tree')}
+                className={`px-4 py-2 rounded-lg border-2 font-semibold transition-all ${
+                  viewMode === 'tree'
+                    ? 'bg-purple-600 text-white border-purple-600'
+                    : 'bg-white text-purple-600 border-gray-200 hover:border-purple-300'
+                }`}
+              >
+                📋 List View
+              </button>
+              <button
+                onClick={() => setViewMode('org-chart')}
+                className={`px-4 py-2 rounded-lg border-2 font-semibold transition-all ${
+                  viewMode === 'org-chart'
+                    ? 'bg-purple-600 text-white border-purple-600'
+                    : 'bg-white text-purple-600 border-gray-200 hover:border-purple-300'
+                }`}
+              >
+                🏢 Org Chart
+              </button>
             </div>
           </div>
+        </CardHeader>
+        <CardContent>
+          {!hierarchy ? (
+            <div className="text-center py-8 text-gray-500">
+              <p>No hierarchy data available</p>
+            </div>
+          ) : viewMode === 'org-chart' ? (
+            <div style={{ overflowX: 'auto', padding: '20px' }}>
+              <div className="org-chart-container">
+                <div className="org-tree">
+                  <OrgChartNode member={hierarchy} targetUserId={targetUserId} maxDepth={5} currentDepth={0} />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <HierarchyNode node={hierarchy} level={0} targetUserId={targetUserId} />
+            </div>
+          )}
 
           {/* Legend */}
           <div className="mt-6 pt-4 border-t space-y-2 text-sm">
             <p className="font-semibold text-gray-700">Legend:</p>
-            <ul className="space-y-1 text-gray-600">
-              <li>• <span className="font-semibold text-green-600">Green boxes</span> highlight the target user</li>
-              <li>• <span className="font-semibold text-purple-600">Purple boxes</span> represent other team members</li>
-              <li>• Lines connect team members to their sponsors</li>
-              <li>• Level (L) = User's achievement level based on direct count</li>
-              <li>• Direct = Number of direct referrals, Team = Total downline</li>
-            </ul>
+            {viewMode === 'org-chart' ? (
+              <ul className="space-y-1 text-gray-600">
+                <li>• <span className="font-semibold text-green-600">Green boxes</span> highlight the target user</li>
+                <li>• <span className="font-semibold text-purple-600">Purple boxes</span> represent other team members</li>
+                <li>• Lines connect team members to their sponsors</li>
+                <li>• Level (L) = User's achievement level based on direct count</li>
+                <li>• Direct = Number of direct referrals, Team = Total downline</li>
+              </ul>
+            ) : (
+              <ul className="space-y-1 text-gray-600">
+                <li>• Number in circle = Position in hierarchy (1 = Root, 2 = Directs, etc.)</li>
+                <li>• Vertical lines connect team members to their sponsors</li>
+                <li>• Level = User's achievement level based on direct count</li>
+                <li>• Direct count shown on the right = Number of direct referrals</li>
+              </ul>
+            )}
           </div>
         </CardContent>
       </Card>
