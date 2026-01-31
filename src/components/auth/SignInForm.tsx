@@ -29,7 +29,7 @@ export default function SignInForm() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/");
+      navigate("/dashboard");
     }
   }, [isAuthenticated, navigate]);
 
@@ -74,7 +74,7 @@ export default function SignInForm() {
         setEmail("");
         setPassword("");
         setOtp("");
-        navigate("/");
+        navigate("/dashboard");
         return;
       }
 
@@ -143,7 +143,7 @@ export default function SignInForm() {
         
         // Use small delay to ensure state updates
         setTimeout(() => {
-          navigate("/");
+          navigate("/dashboard");
         }, 100);
       } else {
         setOtpError("Verification failed. Please try again.");
