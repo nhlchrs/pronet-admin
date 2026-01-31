@@ -51,9 +51,9 @@ export default function SignInForm() {
       if (res?.data?.status === 1 && res?.data?.data?.token && res?.data?.data?.user) {
         const { token, user } = res.data.data;
         
-        // Check if user has admin role
-        if (user.role !== "Admin") {
-          setError("Access denied. This panel is for administrators only.");
+        // Check if user has admin or support role
+        if (user.role !== "Admin" && user.role !== "Support") {
+          setError("Access denied. This panel is for administrators and support staff only.");
           setLoading(false);
           return;
         }
@@ -169,10 +169,9 @@ export default function SignInForm() {
 
             <Input
               placeholder="Enter OTP"
-              maxLength={6}
               value={otp}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setOtp(e.target.value)
+                setOtp(e.target.value.slice(0, 6))
               }
               className="mt-4"
             />
@@ -223,7 +222,6 @@ export default function SignInForm() {
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setEmail(e.target.value)
                     }
-                    required
                   />
                 </div>
 
@@ -240,7 +238,6 @@ export default function SignInForm() {
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setPassword(e.target.value)
                       }
-                      required
                     />
 
                     <span
