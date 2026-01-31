@@ -151,9 +151,23 @@ export const ReferralManagementPage = () => {
                   <div>
                     <p className="font-medium text-gray-900">{u.fname} {u.lname}</p>
                     <p className="text-sm text-gray-500">{u.email}</p>
-                    {u.referralCode && (
-                      <p className="text-xs text-blue-600 font-mono">{u.referralCode}</p>
-                    )}
+                    <div className="flex gap-1 mt-1 flex-wrap">
+                      {u.referralCode && (
+                        <p className="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded border border-green-200 font-mono">
+                          🔑 {u.referralCode}
+                        </p>
+                      )}
+                      {u.leftReferralCode && (
+                        <p className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 font-mono">
+                          ⬅️ {u.leftReferralCode}
+                        </p>
+                      )}
+                      {u.rightReferralCode && (
+                        <p className="text-xs text-orange-600 bg-orange-50 px-2 py-0.5 rounded border border-orange-200 font-mono">
+                          ➡️ {u.rightReferralCode}
+                        </p>
+                      )}
+                    </div>
                   </div>
                   <Network className="w-5 h-5 text-gray-400" />
                 </div>
@@ -214,6 +228,51 @@ export const ReferralManagementPage = () => {
             </CardContent>
           </Card>
         </div>
+      )}
+
+      {/* Referral Codes Display */}
+      {selectedUserId && users.length === 0 && (
+        (() => {
+          // Find the selected user from state to get their referral codes
+          // We'll fetch this data when user is selected
+          return (
+            <Card className="border-l-4 border-l-blue-500">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Network className="w-5 h-5" />
+                  Referral Codes
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Main Code */}
+                  <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-200 dark:border-green-700">
+                    <p className="text-sm font-semibold text-green-700 dark:text-green-300 mb-2">🔑 Main Code</p>
+                    <div className="bg-white dark:bg-gray-800 p-2 rounded font-mono text-sm font-bold break-all text-green-600 dark:text-green-400">
+                      {stats?.referralCode || 'N/A'}
+                    </div>
+                  </div>
+
+                  {/* Left Code */}
+                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-200 dark:border-blue-700">
+                    <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">⬅️ Left Code (Lpro)</p>
+                    <div className="bg-white dark:bg-gray-800 p-2 rounded font-mono text-sm font-bold break-all text-blue-600 dark:text-blue-400">
+                      {stats?.leftReferralCode || 'N/A'}
+                    </div>
+                  </div>
+
+                  {/* Right Code */}
+                  <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border-2 border-orange-200 dark:border-orange-700">
+                    <p className="text-sm font-semibold text-orange-700 dark:text-orange-300 mb-2">➡️ Right Code (Rpro)</p>
+                    <div className="bg-white dark:bg-gray-800 p-2 rounded font-mono text-sm font-bold break-all text-orange-600 dark:text-orange-400">
+                      {stats?.rightReferralCode || 'N/A'}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })()
       )}
 
       {/* Team Hierarchy */}

@@ -191,7 +191,7 @@ export const ReferralCodeInput = ({
 export const MyReferralCode = ({ userId }: { userId?: string }) => {
   const [loading, setLoading] = useState(false);
   const [referralData, setReferralData] = useState<any>(null);
-  const [copied, setCopied] = useState(false);
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [error, setError] = useState('');
 
   const fetchReferralCode = async () => {
@@ -212,11 +212,11 @@ export const MyReferralCode = ({ userId }: { userId?: string }) => {
     }
   };
 
-  const handleCopyCode = async (text: string) => {
+  const handleCopyCode = async (text: string, codeType: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setCopiedCode(codeType);
+      setTimeout(() => setCopiedCode(null), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
@@ -260,44 +260,108 @@ export const MyReferralCode = ({ userId }: { userId?: string }) => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Share2 className="w-5 h-5" />
-          Your Referral Code
+          Your Referral Codes
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Code Display */}
-        <div className="space-y-2">
-          <Label>Referral Code</Label>
+      <CardContent className="space-y-6">
+        {/* Main Referral Code */}
+        <div className="space-y-2 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-200 dark:border-green-800">
+          <Label className="text-green-700 dark:text-green-300 font-semibold">🔑 Main Referral Code</Label>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">General team invitation code</p>
           <div className="flex gap-2">
-            <div className="flex-1 px-4 py-2 bg-gray-100 rounded-lg border border-gray-300 font-mono font-bold text-lg tracking-wider">
+            <div className="flex-1 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border border-green-300 dark:border-green-700 font-mono font-bold text-lg tracking-wider">
               {referralData.referralCode}
             </div>
             <Button
-              onClick={() => handleCopyCode(referralData.referralCode)}
+              onClick={() => handleCopyCode(referralData.referralCode, 'main')}
               variant="outline"
-              className="gap-2"
+              className="gap-2 border-green-300 hover:bg-green-100 dark:border-green-700"
             >
               <Copy className="w-4 h-4" />
-              {copied ? 'Copied!' : 'Copy'}
+              {copiedCode === 'main' ? 'Copied!' : 'Copy'}
+            </Button>
+          </div>
+          <div className="flex gap-2 mt-2">
+            <Input
+              disabled
+              value={referralData.referralLink}
+              className="text-xs bg-white dark:bg-gray-800"
+            />
+            <Button
+              onClick={() => handleCopyCode(referralData.referralLink, 'main-link')}
+              variant="outline"
+              size="sm"
+              className="border-green-300 hover:bg-green-100 dark:border-green-700"
+            >
+              <Copy className="w-3 h-3" />
             </Button>
           </div>
         </div>
 
-        {/* Referral Link */}
-        <div className="space-y-2">
-          <Label>Referral Link</Label>
+        {/* Left Team Code */}
+        <div className="space-y-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-200 dark:border-blue-800">
+          <Label className="text-blue-700 dark:text-blue-300 font-semibold">⬅️ Left Team Code (Lpro)</Label>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">For left position members</p>
           <div className="flex gap-2">
-            <Input
-              disabled
-              value={referralData.referralLink}
-              className="text-sm"
-            />
+            <div className="flex-1 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border border-blue-300 dark:border-blue-700 font-mono font-bold text-lg tracking-wider">
+              {referralData.leftReferralCode}
+            </div>
             <Button
-              onClick={() => handleCopyCode(referralData.referralLink)}
+              onClick={() => handleCopyCode(referralData.leftReferralCode, 'left')}
               variant="outline"
-              className="gap-2"
+              className="gap-2 border-blue-300 hover:bg-blue-100 dark:border-blue-700"
             >
               <Copy className="w-4 h-4" />
-              {copied ? 'Copied!' : 'Copy'}
+              {copiedCode === 'left' ? 'Copied!' : 'Copy'}
+            </Button>
+          </div>
+          <div className="flex gap-2 mt-2">
+            <Input
+              disabled
+              value={referralData.leftReferralLink}
+              className="text-xs bg-white dark:bg-gray-800"
+            />
+            <Button
+              onClick={() => handleCopyCode(referralData.leftReferralLink, 'left-link')}
+              variant="outline"
+              size="sm"
+              className="border-blue-300 hover:bg-blue-100 dark:border-blue-700"
+            >
+              <Copy className="w-3 h-3" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Right Team Code */}
+        <div className="space-y-2 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border-2 border-orange-200 dark:border-orange-800">
+          <Label className="text-orange-700 dark:text-orange-300 font-semibold">➡️ Right Team Code (Rpro)</Label>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">For right position members</p>
+          <div className="flex gap-2">
+            <div className="flex-1 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border border-orange-300 dark:border-orange-700 font-mono font-bold text-lg tracking-wider">
+              {referralData.rightReferralCode}
+            </div>
+            <Button
+              onClick={() => handleCopyCode(referralData.rightReferralCode, 'right')}
+              variant="outline"
+              className="gap-2 border-orange-300 hover:bg-orange-100 dark:border-orange-700"
+            >
+              <Copy className="w-4 h-4" />
+              {copiedCode === 'right' ? 'Copied!' : 'Copy'}
+            </Button>
+          </div>
+          <div className="flex gap-2 mt-2">
+            <Input
+              disabled
+              value={referralData.rightReferralLink}
+              className="text-xs bg-white dark:bg-gray-800"
+            />
+            <Button
+              onClick={() => handleCopyCode(referralData.rightReferralLink, 'right-link')}
+              variant="outline"
+              size="sm"
+              className="border-orange-300 hover:bg-orange-100 dark:border-orange-700"
+            >
+              <Copy className="w-3 h-3" />
             </Button>
           </div>
         </div>
@@ -339,13 +403,14 @@ export const MyReferralCode = ({ userId }: { userId?: string }) => {
         )}
 
         {/* Share Instructions */}
-        <div className="p-3 bg-blue-50 rounded-lg border border-blue-200 text-sm text-blue-900">
+        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700 text-sm text-blue-900 dark:text-blue-100">
           <p className="font-semibold mb-1">How to Share:</p>
           <ul className="list-disc list-inside space-y-1 text-xs">
-            <li>Share your referral code or link with others</li>
-            <li>They use it during signup or join directly</li>
-            <li>They'll be added to your team</li>
-            <li>You'll earn bonuses from their activity</li>
+            <li>📋 <strong>Main Code:</strong> For general team invitations</li>
+            <li>⬅️ <strong>Left Code (Lpro):</strong> Place members on your left team</li>
+            <li>➡️ <strong>Right Code (Rpro):</strong> Place members on your right team</li>
+            <li>💰 You earn bonuses from their activity</li>
+            <li>🚀 Your team grows with every referral!</li>
           </ul>
         </div>
       </CardContent>

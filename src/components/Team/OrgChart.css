@@ -185,6 +185,36 @@
   display: inline-block;
 }
 
+/* Code Badges */
+.code-badge {
+  font-size: 9px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  display: inline-block;
+  margin: 2px;
+  font-family: monospace;
+  white-space: nowrap;
+}
+
+.code-badge.main {
+  background: rgba(34, 197, 94, 0.3);
+  color: #dcfce7;
+  border: 0.5px solid rgba(34, 197, 94, 0.5);
+}
+
+.code-badge.left {
+  background: rgba(59, 130, 246, 0.3);
+  color: #dbeafe;
+  border: 0.5px solid rgba(59, 130, 246, 0.5);
+}
+
+.code-badge.right {
+  background: rgba(249, 115, 22, 0.3);
+  color: #fed7aa;
+  border: 0.5px solid rgba(249, 115, 22, 0.5);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .org-children {

@@ -74,7 +74,19 @@ const OrgChartNode = ({ member, targetUserId, maxDepth = 5, currentDepth = 0 }: 
           <div className="org-node-email">{member.userId.email}</div>
         )}
         {member.referralCode && (
-          <div className="referral-code-org">🔑 {member.referralCode}</div>
+          <div className="referral-code-org">
+            <div className="code-badge main">🔑 {member.referralCode}</div>
+          </div>
+        )}
+        {member.leftReferralCode && (
+          <div className="referral-code-org">
+            <div className="code-badge left">⬅️ {member.leftReferralCode}</div>
+          </div>
+        )}
+        {member.rightReferralCode && (
+          <div className="referral-code-org">
+            <div className="code-badge right">➡️ {member.rightReferralCode}</div>
+          </div>
         )}
         <div className="org-node-stats">
           <div className="org-stat">
@@ -158,18 +170,25 @@ const HierarchyNode = ({ node, level, targetUserId }: HierarchyNodeProps) => {
               }`}>
                 Level {node.level}
               </Badge>
+            </div>
+            <p className="text-xs text-gray-600">{node.userId?.email}</p>
+            <div className="flex gap-1 mt-1 flex-wrap">
               {node.referralCode && (
-                <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded border ${
-                  isTargetUser 
-                    ? 'text-green-600 bg-green-50 border-green-200' 
-                    : 'text-purple-600 bg-purple-50 border-purple-200'
-                }`}>
-                  <Key className="w-3 h-3" />
-                  {node.referralCode}
+                <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded border text-green-600 bg-green-50 border-green-200">
+                  🔑 {node.referralCode}
+                </span>
+              )}
+              {node.leftReferralCode && (
+                <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded border text-blue-600 bg-blue-50 border-blue-200">
+                  ⬅️ {node.leftReferralCode}
+                </span>
+              )}
+              {node.rightReferralCode && (
+                <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded border text-orange-600 bg-orange-50 border-orange-200">
+                  ➡️ {node.rightReferralCode}
                 </span>
               )}
             </div>
-            <p className="text-xs text-gray-600">{node.userId?.email}</p>
           </div>
           <div className="flex-shrink-0 text-right">
             <div className={`text-sm font-bold ${isTargetUser ? 'text-green-600' : 'text-purple-600'}`}>{node.directCount}</div>
