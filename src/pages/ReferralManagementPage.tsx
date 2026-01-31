@@ -179,7 +179,7 @@ export const ReferralManagementPage = () => {
 
       {/* Statistics Cards */}
       {stats && selectedUserId && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
@@ -227,6 +227,20 @@ export const ReferralManagementPage = () => {
               </div>
             </CardContent>
           </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Your Position</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {stats.userPosition === 'left' ? '⬅️ Left' : stats.userPosition === 'right' ? '➡️ Right' : '🔑 Main'}
+                  </p>
+                </div>
+                <Award className="w-8 h-8 text-indigo-500" />
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
 
@@ -236,41 +250,119 @@ export const ReferralManagementPage = () => {
           // Find the selected user from state to get their referral codes
           // We'll fetch this data when user is selected
           return (
-            <Card className="border-l-4 border-l-blue-500">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Network className="w-5 h-5" />
-                  Referral Codes
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Main Code */}
-                  <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-200 dark:border-green-700">
-                    <p className="text-sm font-semibold text-green-700 dark:text-green-300 mb-2">🔑 Main Code</p>
-                    <div className="bg-white dark:bg-gray-800 p-2 rounded font-mono text-sm font-bold break-all text-green-600 dark:text-green-400">
-                      {stats?.referralCode || 'N/A'}
+            <>
+              <Card className="border-l-4 border-l-blue-500">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Network className="w-5 h-5" />
+                    Referral Codes
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Main Code */}
+                    <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-200 dark:border-green-700">
+                      <p className="text-sm font-semibold text-green-700 dark:text-green-300 mb-2">🔑 Main Code</p>
+                      <div className="bg-white dark:bg-gray-800 p-2 rounded font-mono text-sm font-bold break-all text-green-600 dark:text-green-400">
+                        {stats?.referralCode || 'N/A'}
+                      </div>
+                    </div>
+
+                    {/* Left Code */}
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-200 dark:border-blue-700">
+                      <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">⬅️ Left Code (Lpro)</p>
+                      <div className="bg-white dark:bg-gray-800 p-2 rounded font-mono text-sm font-bold break-all text-blue-600 dark:text-blue-400">
+                        {stats?.leftReferralCode || 'N/A'}
+                      </div>
+                    </div>
+
+                    {/* Right Code */}
+                    <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border-2 border-orange-200 dark:border-orange-700">
+                      <p className="text-sm font-semibold text-orange-700 dark:text-orange-300 mb-2">➡️ Right Code (Rpro)</p>
+                      <div className="bg-white dark:bg-gray-800 p-2 rounded font-mono text-sm font-bold break-all text-orange-600 dark:text-orange-400">
+                        {stats?.rightReferralCode || 'N/A'}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Team Position Breakdown */}
+              <Card className="border-l-4 border-l-purple-500">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="w-5 h-5" />
+                    Team Position Breakdown
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Main Team */}
+                    <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
+                      <p className="text-sm font-semibold text-green-700 dark:text-green-300 mb-2">🔑 Main Team</p>
+                      <p className="text-3xl font-bold text-green-600 dark:text-green-400">{stats?.mainTeamCount || 0}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">Joined via Main Code</p>
+                    </div>
+
+                    {/* Left Team */}
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                      <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">⬅️ Left Team (Lpro)</p>
+                      <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{stats?.leftTeamCount || 0}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">Joined via Left Code</p>
+                    </div>
+
+                    {/* Right Team */}
+                    <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
+                      <p className="text-sm font-semibold text-orange-700 dark:text-orange-300 mb-2">➡️ Right Team (Rpro)</p>
+                      <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">{stats?.rightTeamCount || 0}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">Joined via Right Code</p>
                     </div>
                   </div>
 
-                  {/* Left Code */}
-                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-200 dark:border-blue-700">
-                    <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">⬅️ Left Code (Lpro)</p>
-                    <div className="bg-white dark:bg-gray-800 p-2 rounded font-mono text-sm font-bold break-all text-blue-600 dark:text-blue-400">
-                      {stats?.leftReferralCode || 'N/A'}
+                  {/* Team Composition Summary */}
+                  {stats && (stats?.mainTeamCount || stats?.leftTeamCount || stats?.rightTeamCount) > 0 && (
+                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Direct Team Composition</p>
+                      <div className="space-y-2">
+                        {stats?.mainTeamCount > 0 && (
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                              <span className="text-sm text-gray-700 dark:text-gray-300">Main Code</span>
+                            </div>
+                            <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                              {stats?.mainTeamCount} ({Math.round((stats?.mainTeamCount / (stats?.directReferrals || 1)) * 100)}%)
+                            </span>
+                          </div>
+                        )}
+                        {stats?.leftTeamCount > 0 && (
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                              <span className="text-sm text-gray-700 dark:text-gray-300">Left Code (Lpro)</span>
+                            </div>
+                            <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                              {stats?.leftTeamCount} ({Math.round((stats?.leftTeamCount / (stats?.directReferrals || 1)) * 100)}%)
+                            </span>
+                          </div>
+                        )}
+                        {stats?.rightTeamCount > 0 && (
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                              <span className="text-sm text-gray-700 dark:text-gray-300">Right Code (Rpro)</span>
+                            </div>
+                            <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                              {stats?.rightTeamCount} ({Math.round((stats?.rightTeamCount / (stats?.directReferrals || 1)) * 100)}%)
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Right Code */}
-                  <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border-2 border-orange-200 dark:border-orange-700">
-                    <p className="text-sm font-semibold text-orange-700 dark:text-orange-300 mb-2">➡️ Right Code (Rpro)</p>
-                    <div className="bg-white dark:bg-gray-800 p-2 rounded font-mono text-sm font-bold break-all text-orange-600 dark:text-orange-400">
-                      {stats?.rightReferralCode || 'N/A'}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                  )}
+                </CardContent>
+              </Card>
+            </>
           );
         })()
       )}
