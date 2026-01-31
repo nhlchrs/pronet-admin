@@ -47,6 +47,7 @@ import AdminPaymentStatistics from "./components/Admin-components/admin/AdminPay
 import AdminMediaUpload from "./components/Admin-components/admin/AdminMediaUpload";
 import { AuthProvider } from "./context/AuthContext";
 import { SocketProvider } from "./context/SocketContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import { ConfirmationProvider } from "./hooks/useConfirmation";
 import ConfirmationDialog from "./components/ConfirmationDialog";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -56,13 +57,14 @@ export default function App() {
   return (
     <>
       <Toaster position="bottom-right" richColors />
-      <AuthProvider>
-        <SocketProvider>
-        <ConfirmationProvider>
-          <ConfirmationDialog />
-          <Router>
-          <ScrollToTop />
-          <Routes>
+      <ThemeProvider>
+        <AuthProvider>
+          <SocketProvider>
+          <ConfirmationProvider>
+            <ConfirmationDialog />
+            <Router>
+            <ScrollToTop />
+            <Routes>
             {/* Dashboard Layout - Protected */}
             <Route
               element={
@@ -136,6 +138,7 @@ export default function App() {
         </ConfirmationProvider>
         </SocketProvider>
       </AuthProvider>
+      </ThemeProvider>
     </>
   );
 }

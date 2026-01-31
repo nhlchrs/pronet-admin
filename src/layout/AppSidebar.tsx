@@ -337,15 +337,15 @@ const AppSidebar: React.FC = () => {
             <>
               <img
                 className="dark:hidden"
-                src="/images/logo/logo2.png"
-                alt="Logo"
+                src="/images/logo/pro-net-light.svg"
+                alt="ProNext Logo"
                 width={150}
                 height={40}
               />
               <img
                 className="hidden dark:block"
-                src="/images/logo/logo2.png"
-                alt="Logo"
+                src="/images/logo/pro-net-dark.svg"
+                alt="ProNext Logo"
                 width={150}
                 height={40}
               />

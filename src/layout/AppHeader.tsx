@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Link } from "react-router";
 import { useSidebar } from "../context/SidebarContext";
+import { ThemeToggleButton } from "../components/common/ThemeToggleButton";
 // import NotificationDropdown from "../components/header/NotificationDropdown";
 import UserDropdown from "../components/header/UserDropdown";
 
@@ -84,14 +85,14 @@ const AppHeader: React.FC = () => {
 
           <Link to="/" className="lg:hidden">
             <img
-              className="dark:hidden"
-              src="./images/logo/logo2.png"
-              alt="Logo"
+              className="dark:hidden h-10"
+              src="./images/logo/pro-net-dark.svg"
+              alt="ProNext Logo"
             />
             <img
-              className="hidden dark:block"
-              src="./images/logo/logo2.png"
-              alt="Logo"
+              className="hidden dark:block h-10"
+              src="./images/logo/pro-net-light.svg"
+              alt="ProNext Logo"
             />
           </Link>
 
@@ -155,9 +156,13 @@ const AppHeader: React.FC = () => {
             isApplicationMenuOpen ? "flex" : "hidden"
           } items-center justify-between w-full gap-4 px-5 py-4 lg:flex shadow-theme-md lg:justify-end lg:px-0 lg:shadow-none`}
         >
-          {/* <div className="flex items-center gap-2 2xsm:gap-3">
-            <NotificationDropdown />
-          </div> */}
+          <div className="flex items-center gap-2 2xsm:gap-3">
+            {/* <!-- Dark Mode Toggler --> */}
+            <ThemeToggleButton />
+            {/* <!-- Dark Mode Toggler --> */}
+            
+            {/* <NotificationDropdown /> */}
+          </div>
           {/* <!-- User Area --> */}
           <UserDropdown />
         </div>
