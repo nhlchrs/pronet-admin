@@ -87,12 +87,12 @@ const AppHeader: React.FC = () => {
             <img
               className="dark:hidden h-10"
               src="./images/logo/pro-net-dark.svg"
-              alt="ProNext Logo"
+              alt="ProNet Logo"
             />
             <img
               className="hidden dark:block h-10"
               src="./images/logo/pro-net-light.svg"
-              alt="ProNext Logo"
+              alt="ProNet Logo"
             />
           </Link>
 

@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <>
       <PageMeta
-        title="Home Dashboard - ProNext Admin Panel"
+        title="Home Dashboard - ProNet Admin Panel"
         description="Overview of key metrics and statistics"
       />
       <div className="grid grid-cols-12 gap-4 md:gap-6">

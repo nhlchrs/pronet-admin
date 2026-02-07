@@ -201,7 +201,7 @@ const AdminDashboard = () => {
   return (
     <>
       <PageMeta
-        title="Dashboard - ProNext Admin Panel"
+        title="Dashboard - ProNet Admin Panel"
         description="Admin dashboard with analytics and user statistics"
       />
     <div className="space-y-6">

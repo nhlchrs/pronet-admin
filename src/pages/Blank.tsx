@@ -5,7 +5,7 @@ export default function Blank() {
   return (
     <div>
       <PageMeta
-        title="Blank Page - ProNext Admin Panel"
+        title="Blank Page - ProNet Admin Panel"
         description="Blank starter page for custom content"
       />
       <PageBreadcrumb pageTitle="Blank Page" />

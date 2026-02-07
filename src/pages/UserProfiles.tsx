@@ -36,7 +36,7 @@ export default function UserProfiles() {
   return (
     <>
       <PageMeta
-        title="Profile - ProNext Admin Panel"
+        title="Profile - ProNet Admin Panel"
         description="Manage your admin profile and account settings"
       />
       <PageBreadcrumb pageTitle="Profile" />

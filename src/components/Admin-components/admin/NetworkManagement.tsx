@@ -62,7 +62,7 @@ const NetworkManagement = () => {
   return (
     <>
       <PageMeta 
-        title="Network Management - ProNext Admin Panel" 
+        title="Network Management - ProNet Admin Panel" 
         description="Manage and monitor network structure" 
       />
       <div className="space-y-6">

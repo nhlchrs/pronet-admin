@@ -7,7 +7,7 @@ export default function Avatars() {
   return (
     <>
       <PageMeta
-        title="Avatars - ProNext Admin Panel"
+        title="Avatars - ProNet Admin Panel"
         description="User avatar components and styles"
       />
       <PageBreadcrumb pageTitle="Avatars" />

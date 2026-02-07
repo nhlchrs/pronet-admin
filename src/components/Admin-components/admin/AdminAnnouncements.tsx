@@ -268,7 +268,7 @@ export default function AdminAnnouncements() {
   return (
     <>
       <PageMeta 
-        title="Announcements - ProNext Admin Panel" 
+        title="Announcements - ProNet Admin Panel" 
         description="Create and manage system-wide announcements" 
       />
       <div className="space-y-6">

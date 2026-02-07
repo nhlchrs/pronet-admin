@@ -9,7 +9,7 @@ export default function Images() {
   return (
     <>
       <PageMeta
-        title="Images - ProNext Admin Panel"
+        title="Images - ProNet Admin Panel"
         description="Image components and responsive grids"
       />
       <PageBreadcrumb pageTitle="Images" />

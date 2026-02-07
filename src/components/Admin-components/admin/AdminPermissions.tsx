@@ -139,7 +139,7 @@ const AdminPermissions = () => {
   return (
     <>
       <PageMeta 
-        title="Permissions - ProNext Admin Panel" 
+        title="Permissions - ProNet Admin Panel" 
         description="Manage role-based access control" 
       />
       <div className="space-y-6">

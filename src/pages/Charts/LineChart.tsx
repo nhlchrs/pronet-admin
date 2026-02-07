@@ -7,7 +7,7 @@ export default function LineChart() {
   return (
     <>
       <PageMeta
-        title="Line Charts - ProNext Admin Panel"
+        title="Line Charts - ProNet Admin Panel"
         description="View and analyze data with line charts"
       />
       <PageBreadcrumb pageTitle="Line Chart" />

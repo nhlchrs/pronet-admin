@@ -98,7 +98,7 @@ const AffiliateTree = () => {
   return (
     <>
       <PageMeta 
-        title="Affiliate Tree - ProNext Admin Panel" 
+        title="Affiliate Tree - ProNet Admin Panel" 
         description="View and analyze affiliate hierarchy" 
       />
       <div className="space-y-6">

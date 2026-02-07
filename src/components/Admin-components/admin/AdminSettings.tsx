@@ -36,10 +36,10 @@ const AdminSettings = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   // General Settings
-  const [websiteName, setWebsiteName] = useState('ProNext Solutions');
+  const [websiteName, setWebsiteName] = useState('ProNet Solutions');
   const [websiteTagline, setWebsiteTagline] = useState('The Future of Affiliate Marketing & Network Growth');
-  const [adminEmail, setAdminEmail] = useState('admin@pronext.com');
-  const [supportEmail, setSupportEmail] = useState('support@pronext.com');
+  const [adminEmail, setAdminEmail] = useState('admin@pronet.com');
+  const [supportEmail, setSupportEmail] = useState('support@pronet.com');
   const [maintenance, setMaintenance] = useState(false);
   
   // Affiliate Settings
@@ -51,9 +51,9 @@ const AdminSettings = () => {
   // Email Settings
   const [smtpHost, setSmtpHost] = useState('smtp.example.com');
   const [smtpPort, setSmtpPort] = useState('587');
-  const [smtpUsername, setSmtpUsername] = useState('notifications@pronext.com');
+  const [smtpUsername, setSmtpUsername] = useState('notifications@pronet.com');
   const [smtpPassword, setSmtpPassword] = useState('********');
-  const [senderName, setSenderName] = useState('ProNext Solutions');
+  const [senderName, setSenderName] = useState('ProNet Solutions');
   
   // Notification Settings
   const [emailNotifications, setEmailNotifications] = useState(true);
@@ -159,7 +159,7 @@ const AdminSettings = () => {
   return (
     <>
       <PageMeta 
-        title="Settings - ProNext Admin Panel" 
+        title="Settings - ProNet Admin Panel" 
         description="Configure system settings and preferences" 
       />
       <div className="space-y-6">

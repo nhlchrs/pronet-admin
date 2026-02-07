@@ -6,8 +6,8 @@ export default function SignUp() {
   return (
     <>
       <PageMeta
-        title="Sign Up - ProNext Admin Panel"
-        description="Create your ProNext admin account to manage your platform"
+        title="Sign Up - ProNet Admin Panel"
+        description="Create your ProNet admin account to manage your platform"
       />
       <AuthLayout>
         <SignUpForm />

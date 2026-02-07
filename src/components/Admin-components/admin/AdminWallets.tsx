@@ -166,7 +166,7 @@ const AdminWallets = () => {
   return (
     <>
       <PageMeta 
-        title="Wallets - ProNext Admin Panel" 
+        title="Wallets - ProNet Admin Panel" 
         description="Manage user wallets and balances" 
       />
       <div className="space-y-6">

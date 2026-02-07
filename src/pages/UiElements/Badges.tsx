@@ -8,7 +8,7 @@ export default function Badges() {
   return (
     <div>
       <PageMeta
-        title="Badges - ProNext Admin Panel"
+        title="Badges - ProNet Admin Panel"
         description="Badge components and status indicators"
       />
       <PageBreadcrumb pageTitle="Badges" />

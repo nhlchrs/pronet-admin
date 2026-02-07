@@ -190,7 +190,7 @@ export default function AdminMediaUpload() {
   return (
     <>
       <PageMeta 
-        title="Media Library - ProNext Admin Panel" 
+        title="Media Library - ProNet Admin Panel" 
         description="Upload and manage secure media files including videos and PDFs" 
       />
       <div className="p-6">

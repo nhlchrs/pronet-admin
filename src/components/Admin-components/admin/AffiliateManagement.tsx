@@ -141,7 +141,7 @@ const AffiliateManagement = () => {
   return (
     <>
       <PageMeta 
-        title="Affiliate Management - ProNext Admin Panel" 
+        title="Affiliate Management - ProNet Admin Panel" 
         description="Manage and monitor all affiliates" 
       />
       <div className="space-y-6">

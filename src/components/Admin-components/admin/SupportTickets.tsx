@@ -227,7 +227,7 @@ const SupportTickets = () => {
   return (
     <>
       <PageMeta 
-        title="Support Tickets - ProNext Admin Panel" 
+        title="Support Tickets - ProNet Admin Panel" 
         description="Manage and respond to support tickets" 
       />
       <div className="space-y-6">

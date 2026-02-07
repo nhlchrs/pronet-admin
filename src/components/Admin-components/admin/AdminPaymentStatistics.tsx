@@ -98,7 +98,7 @@ export default function AdminPaymentStatistics() {
   return (
     <>
       <PageMeta 
-        title="Payment Statistics - ProNext Admin Panel" 
+        title="Payment Statistics - ProNet Admin Panel" 
         description="View and analyze payment statistics" 
       />
       <div className="space-y-6 p-6">

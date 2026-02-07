@@ -7,7 +7,7 @@ export default function BarChart() {
   return (
     <div>
       <PageMeta
-        title="Bar Charts - ProNext Admin Panel"
+        title="Bar Charts - ProNet Admin Panel"
         description="View and analyze data with bar charts"
       />
       <PageBreadcrumb pageTitle="Bar Chart" />

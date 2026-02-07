@@ -139,7 +139,7 @@ const WithdrawalManagement = () => {
   return (
     <>
       <PageMeta 
-        title="Withdrawals - ProNext Admin Panel" 
+        title="Withdrawals - ProNet Admin Panel" 
         description="Manage and process withdrawal requests" 
       />
       <div className="space-y-6">

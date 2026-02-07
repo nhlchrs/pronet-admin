@@ -7,7 +7,7 @@ export default function BasicTables() {
   return (
     <>
       <PageMeta
-        title="Basic Tables - ProNext Admin Panel"
+        title="Basic Tables - ProNet Admin Panel"
         description="View data in basic table format"
       />
       <PageBreadcrumb pageTitle="Basic Tables" />

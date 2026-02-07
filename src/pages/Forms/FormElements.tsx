@@ -15,7 +15,7 @@ export default function FormElements() {
   return (
     <div>
       <PageMeta
-        title="Form Elements - ProNext Admin Panel"
+        title="Form Elements - ProNet Admin Panel"
         description="Form input components and examples"
       />
       <PageBreadcrumb pageTitle="Form Elements" />

@@ -6,8 +6,8 @@ export default function SignIn() {
   return (
     <>
       <PageMeta
-        title="Sign In - ProNext Admin Panel"
-        description="Sign in to your ProNext admin account"
+        title="Sign In - ProNet Admin Panel"
+        description="Sign in to your ProNet admin account"
       />
       <AuthLayout>
         <SignInForm />

@@ -10,7 +10,7 @@ export default function Videos() {
   return (
     <>
       <PageMeta
-        title="Videos - ProNext Admin Panel"
+        title="Videos - ProNet Admin Panel"
         description="Video components and responsive embeds"
       />
       <PageBreadcrumb pageTitle="Videos" />

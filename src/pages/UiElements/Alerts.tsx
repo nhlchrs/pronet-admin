@@ -7,7 +7,7 @@ export default function Alerts() {
   return (
     <>
       <PageMeta
-        title="Alerts - ProNext Admin Panel"
+        title="Alerts - ProNet Admin Panel"
         description="UI alert components and notifications"
       />
       <PageBreadcrumb pageTitle="Alerts" />

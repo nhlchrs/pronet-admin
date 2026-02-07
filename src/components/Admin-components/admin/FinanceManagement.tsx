@@ -99,7 +99,7 @@ const FinanceManagement = () => {
   return (
     <>
       <PageMeta 
-        title="Finance Management - ProNext Admin Panel" 
+        title="Finance Management - ProNet Admin Panel" 
         description="Manage financial transactions and payments" 
       />
       <div className="space-y-6">

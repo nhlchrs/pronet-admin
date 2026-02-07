@@ -96,7 +96,7 @@ export const ReferralManagementPage = () => {
   return (
     <>
       <PageMeta 
-        title="Referral Management - ProNext Admin Panel" 
+        title="Referral Management - ProNet Admin Panel" 
         description="Manage referrals and team hierarchy" 
       />
       <div className="space-y-6">

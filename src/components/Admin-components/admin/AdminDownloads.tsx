@@ -159,7 +159,7 @@ const AdminDownloads = () => {
   return (
     <>
       <PageMeta 
-        title="Downloads - ProNext Admin Panel" 
+        title="Downloads - ProNet Admin Panel" 
         description="Manage downloadable resources and files" 
       />
       <div className="space-y-6">

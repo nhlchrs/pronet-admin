@@ -118,7 +118,7 @@ const Calendar: React.FC = () => {
   return (
     <>
       <PageMeta
-        title="Calendar - ProNext Admin Panel"
+        title="Calendar - ProNet Admin Panel"
         description="View and manage events and schedules"
       />
       <div className="rounded-2xl border  border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">

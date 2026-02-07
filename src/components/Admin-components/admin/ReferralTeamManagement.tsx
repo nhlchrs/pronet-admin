@@ -188,7 +188,7 @@ const ReferralTeamManagement = () => {
   return (
     <>
       <PageMeta 
-        title="Referral Team - ProNext Admin Panel" 
+        title="Referral Team - ProNet Admin Panel" 
         description="Manage referral teams and commissions" 
       />
       <div className="space-y-6 p-6">

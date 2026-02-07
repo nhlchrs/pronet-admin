@@ -291,7 +291,7 @@ const TeamManagement = () => {
   return (
     <>
       <PageMeta 
-        title="Team Management - ProNext Admin Panel" 
+        title="Team Management - ProNet Admin Panel" 
         description="Manage team structure and hierarchy" 
       />
       <div className="space-y-6">

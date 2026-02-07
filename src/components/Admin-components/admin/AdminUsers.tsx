@@ -210,7 +210,7 @@ export default function AdminUsers() {
   return (
     <>
       <PageMeta
-        title="Users Management - ProNext Admin Panel"
+        title="Users Management - ProNet Admin Panel"
         description="Manage and monitor all users in the system"
       />
       <div className="space-y-6">

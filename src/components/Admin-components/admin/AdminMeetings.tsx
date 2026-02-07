@@ -341,7 +341,7 @@ export default function AdminMeetings() {
   return (
     <>
       <PageMeta 
-        title="Meetings Management - ProNext Admin Panel" 
+        title="Meetings Management - ProNet Admin Panel" 
         description="Manage and monitor all meetings and webinars in the system" 
       />
       <div className="space-y-6">

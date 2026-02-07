@@ -246,7 +246,7 @@ const KYCVerification = () => {
   return (
     <>
       <PageMeta 
-        title="KYC Verification - ProNext Admin Panel" 
+        title="KYC Verification - ProNet Admin Panel" 
         description="Review and verify user KYC documents" 
       />
       <div className="space-y-6">

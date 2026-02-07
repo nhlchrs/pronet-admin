@@ -215,7 +215,7 @@ const EpinManagement = () => {
   return (
     <>
       <PageMeta 
-        title="E-Pin Management - ProNext Admin Panel" 
+        title="E-Pin Management - ProNet Admin Panel" 
         description="Manage E-Pins and voucher codes" 
       />
       <div className="space-y-6">

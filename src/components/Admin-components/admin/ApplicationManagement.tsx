@@ -151,7 +151,7 @@ const ApplicationManagement = () => {
   return (
     <>
       <PageMeta 
-        title="Applications - ProNext Admin Panel" 
+        title="Applications - ProNet Admin Panel" 
         description="Review and manage affiliate applications" 
       />
       <div className="space-y-6">

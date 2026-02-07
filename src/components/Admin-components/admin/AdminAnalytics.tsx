@@ -69,7 +69,7 @@ const AdminAnalytics = () => {
   return (
     <>
       <PageMeta 
-        title="Analytics - ProNext Admin Panel" 
+        title="Analytics - ProNet Admin Panel" 
         description="View system analytics and insights" 
       />
       <div className="space-y-6">

@@ -8,7 +8,7 @@ export default function Buttons() {
   return (
     <div>
       <PageMeta
-        title="Buttons - ProNext Admin Panel"
+        title="Buttons - ProNet Admin Panel"
         description="UI button components and styles"
       />
       <PageBreadcrumb pageTitle="Buttons" />

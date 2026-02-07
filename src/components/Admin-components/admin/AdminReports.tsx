@@ -78,7 +78,7 @@ const AdminReports = () => {
   return (
     <>
       <PageMeta 
-        title="Reports - ProNext Admin Panel" 
+        title="Reports - ProNet Admin Panel" 
         description="View system reports and summaries" 
       />
       <div className="space-y-6">

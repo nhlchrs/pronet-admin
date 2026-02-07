@@ -241,7 +241,7 @@ const BlockedAffiliates = () => {
   return (
     <>
       <PageMeta 
-        title="Blocked Affiliates - ProNext Admin Panel" 
+        title="Blocked Affiliates - ProNet Admin Panel" 
         description="Manage blocked and suspended affiliates" 
       />
       <div className="space-y-6">

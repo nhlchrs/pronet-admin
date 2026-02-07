@@ -28,7 +28,7 @@ const ManageBonusStructure = () => {
   return (
     <>
       <PageMeta 
-        title="Bonus Structure - ProNext Admin Panel" 
+        title="Bonus Structure - ProNet Admin Panel" 
         description="Configure bonus and commission structure" 
       />
       <div className="space-y-6">
