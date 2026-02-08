@@ -264,8 +264,8 @@ export const MyReferralCode = ({ userId }: { userId?: string }) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Main Referral Code */}
-        <div className="space-y-2 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-200 dark:border-green-800">
+        {/* Main Referral Code - COMMENTED OUT */}
+        {/* <div className="space-y-2 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-200 dark:border-green-800">
           <Label className="text-green-700 dark:text-green-300 font-semibold">🔑 Main Referral Code</Label>
           <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">General team invitation code</p>
           <div className="flex gap-2">
@@ -296,9 +296,9 @@ export const MyReferralCode = ({ userId }: { userId?: string }) => {
               <Copy className="w-3 h-3" />
             </Button>
           </div>
-        </div>
+        </div> */}
 
-        {/* Left Team Code */}
+        {/* Left Team Code */
         <div className="space-y-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-200 dark:border-blue-800">
           <Label className="text-blue-700 dark:text-blue-300 font-semibold">⬅️ Left Team Code (Lpro)</Label>
           <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">For left position members</p>

@@ -329,33 +329,28 @@ const AppSidebar: React.FC = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`py-8 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
+        className={`py-8 flex items-center ${!isExpanded && !isHovered ? "justify-center" : "justify-start"
           }`}
       >
-        <Link to="/">
+        <Link to="/" className="flex items-center justify-center">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
               <img
-                className="dark:hidden"
-                src="/images/logo/pro-net-light.svg"
+                className="dark:hidden h-10 w-auto"
+                src="/images/logo/logo2.svg"
                 alt="ProNet Logo"
-                width={150}
-                height={40}
               />
               <img
-                className="hidden dark:block"
-                src="/images/logo/pro-net-dark.svg"
+                className="hidden dark:block h-10 w-auto"
+                src="/images/logo/logo2.svg"
                 alt="ProNet Logo"
-                width={150}
-                height={40}
               />
             </>
           ) : (
             <img
-              src="/images/logo/logo-icon.svg"
+              src="/images/logo/logo2.svg"
               alt="Logo"
-              width={32}
-              height={32}
+              className="h-10 w-auto mx-auto"
             />
           )}
         </Link>
