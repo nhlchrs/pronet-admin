@@ -44,6 +44,7 @@ import AdminMeetings from "./components/Admin-components/admin/AdminMeetings";
 import AdminSettings from "./components/Admin-components/admin/AdminSettings";
 import AdminPermissions from "./components/Admin-components/admin/AdminPermissions";
 import AdminPaymentStatistics from "./components/Admin-components/admin/AdminPaymentStatistics";
+import AdminPayouts from "./components/Admin-components/admin/AdminPayouts";
 import AdminMediaUpload from "./components/Admin-components/admin/AdminMediaUpload";
 import { AuthProvider } from "./context/AuthContext";
 import { SocketProvider } from "./context/SocketContext";
@@ -77,6 +78,7 @@ export default function App() {
               <Route index path="/admin/analytics" element={<AdminAnalytics />} />
               <Route index path="/admin/affiliates" element={<AffiliateManagement/>} />
               <Route path="/admin/finance" element={<FinanceManagement />} />
+              <Route path="/admin/payouts" element={<AdminPayouts />} />
               <Route path="/admin/payment-statistics" element={<AdminPaymentStatistics />} />
               <Route path="/admin/bonus" element={<ManageBonusStructure />} />
               <Route path="/admin/reports" element={<AdminReports />} />
