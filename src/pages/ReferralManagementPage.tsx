@@ -306,16 +306,44 @@ export const ReferralManagementPage = () => {
 
                     {/* Left Team */}
                     <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
-                      <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2">⬅️ Left Team (Lpro)</p>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">⬅️ Left Team (Lpro)</p>
+                        {stats?.binaryTree && (
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                            stats.binaryTree.lproAvailable 
+                              ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                              : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                          }`}>
+                            {stats.binaryTree.leftLegCount || 0}/2
+                          </span>
+                        )}
+                      </div>
                       <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{stats?.leftTeamCount || 0}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">Joined via Left Code</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+                        Joined via Left Code
+                        {stats?.binaryTree?.leftLegFull && <span className="ml-1 text-red-500">• Full</span>}
+                      </p>
                     </div>
 
                     {/* Right Team */}
                     <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
-                      <p className="text-sm font-semibold text-orange-700 dark:text-orange-300 mb-2">➡️ Right Team (Rpro)</p>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-sm font-semibold text-orange-700 dark:text-orange-300">➡️ Right Team (Rpro)</p>
+                        {stats?.binaryTree && (
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                            stats.binaryTree.rproAvailable 
+                              ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                              : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                          }`}>
+                            {stats.binaryTree.rightLegCount || 0}/2
+                          </span>
+                        )}
+                      </div>
                       <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">{stats?.rightTeamCount || 0}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">Joined via Right Code</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+                        Joined via Right Code
+                        {stats?.binaryTree?.rightLegFull && <span className="ml-1 text-red-500">• Full</span>}
+                      </p>
                     </div>
                   </div>
 
@@ -358,6 +386,122 @@ export const ReferralManagementPage = () => {
                           </div>
                         )}
                       </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Binary Tree Status Card */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Network className="w-5 h-5" />
+                    Binary Tree Status
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {stats && (
+                    <div className="space-y-4">
+                      {/* Referral Codes with Status */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Left Leg (LPRO) */}
+                        <div className={`border rounded-lg p-4 ${stats.binaryTree?.leftLegFull ? 'bg-gray-50 dark:bg-gray-900/50 border-gray-300' : 'bg-blue-50 dark:bg-blue-900/20 border-blue-300'}`}>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Left Code (Lpro)</span>
+                            </div>
+                            <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                              stats.binaryTree?.lproAvailable 
+                                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                                : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                            }`}>
+                              {stats.binaryTree?.lproAvailable 
+                                ? `✅ Active (${stats.binaryTree?.leftLegCount || 0}/2)` 
+                                : '🔒 Full (2/2)'}
+                            </span>
+                          </div>
+                          <div className="bg-white dark:bg-gray-800 rounded p-2 mb-2 border border-gray-200 dark:border-gray-700">
+                            <code className="text-sm font-mono text-gray-800 dark:text-gray-200 break-all">
+                              {stats.leftReferralCode || 'Not generated'}
+                            </code>
+                          </div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400">
+                            <div>Members: {stats.binaryTree?.leftLegCount || 0}/2</div>
+                            <div>PV: {stats.binaryTree?.leftLegPV || 0}</div>
+                          </div>
+                          {stats.binaryTree?.leftLegFull && (
+                            <div className="mt-2 text-xs text-red-600 dark:text-red-400 font-medium">
+                              ⚠️ Left leg is full
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Right Leg (RPRO) */}
+                        <div className={`border rounded-lg p-4 ${stats.binaryTree?.rightLegFull ? 'bg-gray-50 dark:bg-gray-900/50 border-gray-300' : 'bg-orange-50 dark:bg-orange-900/20 border-orange-300'}`}>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Right Code (Rpro)</span>
+                            </div>
+                            <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                              stats.binaryTree?.rproAvailable 
+                                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                                : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                            }`}>
+                              {stats.binaryTree?.rproAvailable 
+                                ? `✅ Active (${stats.binaryTree?.rightLegCount || 0}/2)` 
+                                : '🔒 Full (2/2)'}
+                            </span>
+                          </div>
+                          <div className="bg-white dark:bg-gray-800 rounded p-2 mb-2 border border-gray-200 dark:border-gray-700">
+                            <code className="text-sm font-mono text-gray-800 dark:text-gray-200 break-all">
+                              {stats.rightReferralCode || 'Not generated'}
+                            </code>
+                          </div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400">
+                            <div>Members: {stats.binaryTree?.rightLegCount || 0}/2</div>
+                            <div>PV: {stats.binaryTree?.rightLegPV || 0}</div>
+                          </div>
+                          {stats.binaryTree?.rightLegFull && (
+                            <div className="mt-2 text-xs text-red-600 dark:text-red-400 font-medium">
+                              ⚠️ Right leg is full
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* PV Summary */}
+                      <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                        <div className="text-sm font-semibold text-green-800 dark:text-green-300 mb-2">
+                          Point Value (PV) Summary
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-xs text-gray-700 dark:text-gray-300">
+                          <div>
+                            <div className="text-gray-500 dark:text-gray-400">Left Leg PV</div>
+                            <div className="font-semibold text-blue-600 dark:text-blue-400">{stats.binaryTree?.leftLegPV || 0}</div>
+                          </div>
+                          <div>
+                            <div className="text-gray-500 dark:text-gray-400">Right Leg PV</div>
+                            <div className="font-semibold text-orange-600 dark:text-orange-400">{stats.binaryTree?.rightLegPV || 0}</div>
+                          </div>
+                          <div>
+                            <div className="text-gray-500 dark:text-gray-400">Weaker Leg</div>
+                            <div className="font-semibold text-green-600 dark:text-green-400">
+                              {Math.min(stats.binaryTree?.leftLegPV || 0, stats.binaryTree?.rightLegPV || 0)}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Both Legs Full Warning */}
+                      {stats.binaryTree?.leftLegFull && stats.binaryTree?.rightLegFull && (
+                        <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 rounded-lg">
+                          <div className="text-xs text-yellow-800 dark:text-yellow-300 font-medium">
+                            ⚠️ Both legs are full (2/2 each). New referrals will be placed in downline members' teams (spillover).
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </CardContent>

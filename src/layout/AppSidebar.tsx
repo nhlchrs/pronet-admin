@@ -77,6 +77,14 @@ const navItems: NavItem[] = [
 
 {
   icon: <GridIcon />,
+  name: "Rewards",
+  subItems: [
+    { name: "Binary Rewards", path: "/admin/rewards", pro: false },
+  ],
+},
+
+{
+  icon: <GridIcon />,
   name: "Content",
   subItems: [
     { name: "Announcements", path: "/admin/announcements", pro: false },

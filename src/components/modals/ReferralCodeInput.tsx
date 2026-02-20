@@ -115,18 +115,30 @@ export const ReferralCodeInput = ({
               setCode(e.target.value.toUpperCase());
               setValidationResult(null);
               setError('');
+              setSuccess('');
             }}
             disabled={loading || validating}
             className="font-mono text-sm"
           />
-          <button
+          {showValidation && (
+            <Button
+              onClick={handleValidateCode}
+              disabled={!code.trim() || validating}
+              variant="outline"
+              className="gap-2"
+            >
+              {validating && <Loader2 className="w-4 h-4 animate-spin" />}
+              {!validating && 'Validate'}
+            </Button>
+          )}
+          <Button
             onClick={handleApplyCode}
-            disabled={!code.trim() || loading || !validationResult}
-            className="px-4 py-2 bg-blue-600 text-white rounded gap-2"
+            disabled={!code.trim() || loading || (showValidation && !validationResult)}
+            className="gap-2"
           >
-            {loading && <Loader2 className="w-4 h-4 animate-spin inline mr-2" />}
-            Apply
-          </button>
+            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+            {!loading && 'Apply'}
+          </Button>
         </div>
 
         {/* Validation Messages */}
@@ -298,7 +310,7 @@ export const MyReferralCode = ({ userId }: { userId?: string }) => {
           </div>
         </div> */}
 
-        {/* Left Team Code */
+        {/* Left Team Code */}
         <div className="space-y-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-200 dark:border-blue-800">
           <Label className="text-blue-700 dark:text-blue-300 font-semibold">⬅️ Left Team Code (Lpro)</Label>
           <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">For left position members</p>
@@ -406,9 +418,8 @@ export const MyReferralCode = ({ userId }: { userId?: string }) => {
         <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700 text-sm text-blue-900 dark:text-blue-100">
           <p className="font-semibold mb-1">How to Share:</p>
           <ul className="list-disc list-inside space-y-1 text-xs">
-            <li>📋 <strong>Main Code:</strong> For general team invitations</li>
-            <li>⬅️ <strong>Left Code (Lpro):</strong> Place members on your left team</li>
-            <li>➡️ <strong>Right Code (Rpro):</strong> Place members on your right team</li>
+            <li>⬅️ <strong className="text-blue-900 dark:text-blue-100">Left Code (Lpro):</strong> Place members on your left team</li>
+            <li>➡️ <strong className="text-blue-900 dark:text-blue-100">Right Code (Rpro):</strong> Place members on your right team</li>
             <li>💰 You earn bonuses from their activity</li>
             <li>🚀 Your team grows with every referral!</li>
           </ul>

@@ -75,6 +75,8 @@ export default function AdminPayouts() {
   const [cryptoTxHash, setCryptoTxHash] = useState('');
   const [adminNotes, setAdminNotes] = useState('');
   const [updating, setUpdating] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -173,6 +175,83 @@ export default function AdminPayouts() {
     }
   };
 
+  const handleProcessPayout = async () => {
+    if (!selectedPayout) return;
+
+    // Validate crypto payout
+    if (selectedPayout.payoutMethod !== 'crypto') {
+      toast.error('Can only process crypto payouts');
+      return;
+    }
+
+    if (!selectedPayout.cryptoWalletAddress || !selectedPayout.cryptoCurrency) {
+      toast.error('Missing crypto wallet details');
+      return;
+    }
+
+    if (selectedPayout.status === 'completed' || selectedPayout.status === 'processing') {
+      toast.error(`Payout is already ${selectedPayout.status}`);
+      return;
+    }
+
+    if (!confirm(`Process payout of ${formatCurrency(selectedPayout.netAmount)} to ${selectedPayout.userId.fname} ${selectedPayout.userId.lname}?\n\nThis will send ${selectedPayout.cryptoCurrency} to:\n${selectedPayout.cryptoWalletAddress}`)) {
+      return;
+    }
+
+    try {
+      setProcessing(true);
+      const response = await axios.post(
+        getApiUrl(`/admin/payouts/${selectedPayout._id}/process`),
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.success) {
+        toast.success('Payout processed successfully! User has been notified via email.');
+        setShowModal(false);
+        fetchPayouts();
+        fetchStats();
+      }
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || 'Failed to process payout';
+      toast.error(errorMsg);
+      console.error('Payout processing error:', error.response?.data);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleExportCSV = async () => {
+    try {
+      setExporting(true);
+      const params: any = {};
+      if (statusFilter) params.status = statusFilter;
+      if (methodFilter) params.payoutMethod = methodFilter;
+
+      const response = await axios.get(getApiUrl('/admin/payouts/export/csv'), {
+        headers: { Authorization: `Bearer ${token}` },
+        params,
+        responseType: 'blob'
+      });
+
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `payouts_export_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      toast.success('CSV exported successfully');
+    } catch (error: any) {
+      toast.error('Failed to export CSV');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     const styles: any = {
       pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
@@ -233,13 +312,23 @@ export default function AdminPayouts() {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Payout Management</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-1">Manage and process user payout requests</p>
           </div>
-          <Button 
-            onClick={() => { fetchPayouts(); fetchStats(); }}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={handleExportCSV}
+              disabled={exporting}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              {exporting ? 'Exporting...' : 'Export CSV'}
+            </Button>
+            <Button 
+              onClick={() => { fetchPayouts(); fetchStats(); }}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Refresh
+            </Button>
+          </div>
         </div>
 
         {/* Statistics Cards */}
@@ -602,21 +691,35 @@ export default function AdminPayouts() {
               </div>
 
               {/* Actions */}
-              <div className="flex justify-end gap-3">
-                <Button
-                  onClick={() => setShowModal(false)}
-                  variant="outline"
-                  disabled={updating}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleUpdateStatus}
-                  disabled={updating}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  {updating ? 'Updating...' : 'Update Payout'}
-                </Button>
+              <div className="flex justify-between items-center">
+                <div>
+                  {selectedPayout.payoutMethod === 'crypto' && 
+                   selectedPayout.status === 'pending' && (
+                    <Button
+                      onClick={handleProcessPayout}
+                      disabled={processing || updating}
+                      className="bg-purple-600 hover:bg-purple-700 text-white"
+                    >
+                      {processing ? 'Processing...' : '🚀 Process Payout via NOWPayments'}
+                    </Button>
+                  )}
+                </div>
+                <div className="flex gap-3">
+                  <Button
+                    onClick={() => setShowModal(false)}
+                    variant="outline"
+                    disabled={updating || processing}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleUpdateStatus}
+                    disabled={updating || processing}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    {updating ? 'Updating...' : 'Update Payout'}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
