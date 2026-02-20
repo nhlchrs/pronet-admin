@@ -267,6 +267,15 @@ export const MyReferralCode = ({ userId }: { userId?: string }) => {
 
   if (!referralData) return null;
 
+  // Smart restriction logic: Only blur one leg at a time to guide user to 2:2
+  // Once BOTH legs have 2+, unlock everything (2:2 achieved)
+  const leftLegCount = referralData.stats?.leftLegCount || 0;
+  const rightLegCount = referralData.stats?.rightLegCount || 0;
+  const binaryActivated = referralData.stats?.binaryActivated || false;
+  const bothLegsHaveTwo = leftLegCount >= 2 && rightLegCount >= 2;
+  const isLeftLegFull = !bothLegsHaveTwo && leftLegCount >= 2;
+  const isRightLegFull = !bothLegsHaveTwo && rightLegCount >= 2;
+
   return (
     <Card>
       <CardHeader>
@@ -276,6 +285,23 @@ export const MyReferralCode = ({ userId }: { userId?: string }) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Smart Restriction Notice */}
+        {(isLeftLegFull || isRightLegFull) && (
+          <div className="p-4 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-lg text-white">
+            <p className="text-sm font-semibold">
+              🎯 Balance Your Team! {isLeftLegFull ? 'Left leg' : 'Right leg'} has 2 members. 
+              Please use <strong>{isLeftLegFull ? 'Right Code (Rpro)' : 'Left Code (Lpro)'}</strong> to achieve 2:2 activation.
+            </p>
+          </div>
+        )}
+        {/* Success Notice - 2:2 Achieved */}
+        {bothLegsHaveTwo && (
+          <div className="p-4 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg text-white">
+            <p className="text-sm font-semibold">
+              🎉 2:2 Activation Achieved! Both codes are now active. You can use either code to grow your team unlimited!
+            </p>
+          </div>
+        )}
         {/* Main Referral Code - COMMENTED OUT */}
         {/* <div className="space-y-2 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-200 dark:border-green-800">
           <Label className="text-green-700 dark:text-green-300 font-semibold">🔑 Main Referral Code</Label>
@@ -311,22 +337,42 @@ export const MyReferralCode = ({ userId }: { userId?: string }) => {
         </div> */}
 
         {/* Left Team Code */}
-        <div className="space-y-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-200 dark:border-blue-800">
-          <Label className="text-blue-700 dark:text-blue-300 font-semibold">⬅️ Left Team Code (Lpro)</Label>
+        <div className="space-y-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-200 dark:border-blue-800" style={{
+          opacity: isLeftLegFull ? 0.5 : 1,
+          pointerEvents: isLeftLegFull ? 'none' : 'auto',
+          userSelect: isLeftLegFull ? 'none' : 'auto',
+          transition: 'all 0.3s ease'
+        }}>
+          <div className="flex items-center justify-between">
+            <Label className="text-blue-700 dark:text-blue-300 font-semibold">⬅️ Left Team Code (Lpro)</Label>
+            {isLeftLegFull ? (
+              <span className="px-2 py-1 text-xs font-semibold bg-red-500 text-white rounded">🔒 Full ({leftLegCount}/2)</span>
+            ) : (
+              <span className="px-2 py-1 text-xs font-semibold bg-green-500 text-white rounded">✅ Active ({leftLegCount})</span>
+            )}
+          </div>
           <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">For left position members</p>
           <div className="flex gap-2">
-            <div className="flex-1 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border border-blue-300 dark:border-blue-700 font-mono font-bold text-lg tracking-wider">
+            <div className="flex-1 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border border-blue-300 dark:border-blue-700 font-mono font-bold text-lg tracking-wider" style={{
+              filter: isLeftLegFull ? 'blur(4px)' : 'none'
+            }}>
               {referralData.leftReferralCode}
             </div>
             <Button
               onClick={() => handleCopyCode(referralData.leftReferralCode, 'left')}
               variant="outline"
               className="gap-2 border-blue-300 hover:bg-blue-100 dark:border-blue-700"
+              disabled={isLeftLegFull}
             >
               <Copy className="w-4 h-4" />
               {copiedCode === 'left' ? 'Copied!' : 'Copy'}
             </Button>
           </div>
+          {isLeftLegFull && (
+            <div className="p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
+              ⚠️ This code is disabled. Use Right Code (Rpro) to complete 2:2 activation.
+            </div>
+          )}
           <div className="flex gap-2 mt-2">
             <Input
               disabled
@@ -338,6 +384,7 @@ export const MyReferralCode = ({ userId }: { userId?: string }) => {
               variant="outline"
               size="sm"
               className="border-blue-300 hover:bg-blue-100 dark:border-blue-700"
+              disabled={isLeftLegFull}
             >
               <Copy className="w-3 h-3" />
             </Button>
@@ -345,22 +392,42 @@ export const MyReferralCode = ({ userId }: { userId?: string }) => {
         </div>
 
         {/* Right Team Code */}
-        <div className="space-y-2 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border-2 border-orange-200 dark:border-orange-800">
-          <Label className="text-orange-700 dark:text-orange-300 font-semibold">➡️ Right Team Code (Rpro)</Label>
+        <div className="space-y-2 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border-2 border-orange-200 dark:border-orange-800" style={{
+          opacity: isRightLegFull ? 0.5 : 1,
+          pointerEvents: isRightLegFull ? 'none' : 'auto',
+          userSelect: isRightLegFull ? 'none' : 'auto',
+          transition: 'all 0.3s ease'
+        }}>
+          <div className="flex items-center justify-between">
+            <Label className="text-orange-700 dark:text-orange-300 font-semibold">➡️ Right Team Code (Rpro)</Label>
+            {isRightLegFull ? (
+              <span className="px-2 py-1 text-xs font-semibold bg-red-500 text-white rounded">🔒 Full ({rightLegCount}/2)</span>
+            ) : (
+              <span className="px-2 py-1 text-xs font-semibold bg-green-500 text-white rounded">✅ Active ({rightLegCount})</span>
+            )}
+          </div>
           <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">For right position members</p>
           <div className="flex gap-2">
-            <div className="flex-1 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border border-orange-300 dark:border-orange-700 font-mono font-bold text-lg tracking-wider">
+            <div className="flex-1 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border border-orange-300 dark:border-orange-700 font-mono font-bold text-lg tracking-wider" style={{
+              filter: isRightLegFull ? 'blur(4px)' : 'none'
+            }}>
               {referralData.rightReferralCode}
             </div>
             <Button
               onClick={() => handleCopyCode(referralData.rightReferralCode, 'right')}
               variant="outline"
               className="gap-2 border-orange-300 hover:bg-orange-100 dark:border-orange-700"
+              disabled={isRightLegFull}
             >
               <Copy className="w-4 h-4" />
               {copiedCode === 'right' ? 'Copied!' : 'Copy'}
             </Button>
           </div>
+          {isRightLegFull && (
+            <div className="p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
+              ⚠️ This code is disabled. Use Left Code (Lpro) to complete 2:2 activation.
+            </div>
+          )}
           <div className="flex gap-2 mt-2">
             <Input
               disabled
@@ -372,6 +439,7 @@ export const MyReferralCode = ({ userId }: { userId?: string }) => {
               variant="outline"
               size="sm"
               className="border-orange-300 hover:bg-orange-100 dark:border-orange-700"
+              disabled={isRightLegFull}
             >
               <Copy className="w-3 h-3" />
             </Button>
@@ -390,6 +458,18 @@ export const MyReferralCode = ({ userId }: { userId?: string }) => {
             <p className="text-sm font-semibold text-gray-600">Total Downline</p>
             <p className="text-2xl font-bold text-green-600">
               {referralData.stats.totalDownline}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-gray-600">Left Leg</p>
+            <p className="text-2xl font-bold text-blue-600">
+              {referralData.stats?.leftLegCount || 0}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-gray-600">Right Leg</p>
+            <p className="text-2xl font-bold text-orange-600">
+              {referralData.stats?.rightLegCount || 0}
             </p>
           </div>
           <div>
