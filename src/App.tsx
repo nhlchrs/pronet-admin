@@ -47,6 +47,7 @@ import AdminPaymentStatistics from "./components/Admin-components/admin/AdminPay
 import AdminPayouts from "./components/Admin-components/admin/AdminPayouts";
 import AdminMediaUpload from "./components/Admin-components/admin/AdminMediaUpload";
 import AdminRewardManagement from "./components/Admin-components/admin/AdminRewardManagement";
+import TestUserCreation from "./pages/TestUserCreation";
 import { AuthProvider } from "./context/AuthContext";
 import { SocketProvider } from "./context/SocketContext";
 import { ThemeProvider } from "./context/ThemeContext";
@@ -104,6 +105,7 @@ export default function App() {
               <Route path="/admin/media" element={<AdminMediaUpload />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
               <Route path="/admin/permissions" element={<AdminPermissions />} />
+              <Route path="/admin/test-users" element={<TestUserCreation />} />
 
               {/* Others Page */}
               <Route path="/profile" element={<UserProfiles />} />

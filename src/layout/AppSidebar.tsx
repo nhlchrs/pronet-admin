@@ -47,6 +47,7 @@ const navItems: NavItem[] = [
   subItems: [
     { name: "All Users", path: "/admin/users", pro: false },
     { name: "Referral Management", path: "/admin/referrals", pro: false },
+    { name: "Test User Creation", path: "/admin/test-users", pro: false, new: true },
   ],
 },
 
