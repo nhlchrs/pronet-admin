@@ -555,14 +555,19 @@ export default function AdminPayouts() {
 
       {/* Detail Modal */}
       {showModal && selectedPayout && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Payout Details</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100000] p-4 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border-2 border-gray-300 dark:border-gray-700 shadow-2xl">
+            <div className="p-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-800 border-b-2 border-gray-200 dark:border-gray-700">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-0">Payout Details</h2>
+            </div>
+            <div className="p-6 bg-white dark:bg-gray-900">
               
               {/* User Info */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">User Information</h3>
+              <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-950 border-2 border-blue-200 dark:border-blue-900 rounded-lg">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                  <div className="w-1 h-6 bg-blue-500 rounded"></div>
+                  User Information
+                </h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="text-gray-600 dark:text-gray-400">Name</p>
@@ -578,8 +583,11 @@ export default function AdminPayouts() {
               </div>
 
               {/* Payout Info */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Payout Information</h3>
+              <div className="mb-6 p-4 bg-green-50 dark:bg-green-950 border-2 border-green-200 dark:border-green-900 rounded-lg">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                  <div className="w-1 h-6 bg-green-500 rounded"></div>
+                  Payout Information
+                </h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="text-gray-600 dark:text-gray-400">Reference Number</p>
@@ -614,8 +622,11 @@ export default function AdminPayouts() {
 
               {/* Crypto Details */}
               {selectedPayout.payoutMethod === 'crypto' && (
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Crypto Details</h3>
+                <div className="mb-6 p-4 bg-purple-50 dark:bg-purple-950 border-2 border-purple-200 dark:border-purple-900 rounded-lg">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                    <div className="w-1 h-6 bg-purple-500 rounded"></div>
+                    Crypto Details
+                  </h3>
                   <div className="text-sm space-y-2">
                     <div>
                       <p className="text-gray-600 dark:text-gray-400">Wallet Address</p>
@@ -628,8 +639,11 @@ export default function AdminPayouts() {
               )}
 
               {/* Update Form */}
-              <div className="mb-6 space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Update Payout</h3>
+              <div className="mb-6 space-y-4 p-4 bg-amber-50 dark:bg-amber-950 border-2 border-amber-200 dark:border-amber-900 rounded-lg">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                  <div className="w-1 h-6 bg-amber-500 rounded"></div>
+                  Update Payout
+                </h3>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -638,7 +652,7 @@ export default function AdminPayouts() {
                   <select
                     value={updateStatus}
                     onChange={(e) => setUpdateStatus(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                    className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-medium"
                   >
                     <option value="pending">Pending</option>
                     <option value="processing">Processing</option>
@@ -658,7 +672,7 @@ export default function AdminPayouts() {
                       value={cryptoTxHash}
                       onChange={(e) => setCryptoTxHash(e.target.value)}
                       placeholder="Enter blockchain transaction hash"
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                      className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                     />
                   </div>
                 )}
@@ -672,7 +686,7 @@ export default function AdminPayouts() {
                     value={transactionId}
                     onChange={(e) => setTransactionId(e.target.value)}
                     placeholder="Enter transaction ID"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                    className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                   />
                 </div>
 
@@ -685,20 +699,20 @@ export default function AdminPayouts() {
                     onChange={(e) => setAdminNotes(e.target.value)}
                     placeholder="Add any notes or comments..."
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                    className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                   />
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center pt-4 border-t-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 -mx-6 -mb-6 px-6 py-4 rounded-b-xl">
                 <div>
                   {selectedPayout.payoutMethod === 'crypto' && 
                    selectedPayout.status === 'pending' && (
                     <Button
                       onClick={handleProcessPayout}
                       disabled={processing || updating}
-                      className="bg-purple-600 hover:bg-purple-700 text-white"
+                      className="bg-purple-600 hover:bg-purple-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
                     >
                       {processing ? 'Processing...' : '🚀 Process Payout via NOWPayments'}
                     </Button>
@@ -709,13 +723,14 @@ export default function AdminPayouts() {
                     onClick={() => setShowModal(false)}
                     variant="outline"
                     disabled={updating || processing}
+                    className="bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold"
                   >
                     Cancel
                   </Button>
                   <Button
                     onClick={handleUpdateStatus}
                     disabled={updating || processing}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
                   >
                     {updating ? 'Updating...' : 'Update Payout'}
                   </Button>
