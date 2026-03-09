@@ -7,7 +7,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { 
   Search, Download, Eye, CheckCircle, Package, 
-  Gift, Calendar, Filter, Truck
+  Gift, Calendar, Filter, Truck, RefreshCw
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import PageMeta from '../../../components/common/PageMeta';
@@ -55,10 +55,10 @@ interface RewardClaim {
   size?: string;
   color?: string;
   trackingNumber?: string;
-  claimedAt: string;
-  processingStartedAt?: string;
-  shippedAt?: string;
-  deliveredAt?: string;
+  claimedDate: string;
+  processingDate?: string;
+  shippedDate?: string;
+  deliveredDate?: string;
 }
 
 const RANK_ICONS: Record<string, string> = {
@@ -96,12 +96,12 @@ const AdminRewardManagement = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/api/team/rewards/all`, {
+      const response = await axios.get(`${API_URL}/admin/rewards`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      setRewards(response.data.data || response.data || []);
+      setRewards(response.data.data || []);
     } catch (error) {
       console.error('Error fetching rewards:', error);
       toast({
@@ -158,7 +158,7 @@ const AdminRewardManagement = () => {
       }
 
       await axios.patch(
-        `${API_URL}/api/team/rewards/${viewingReward._id}/status`,
+        `${API_URL}/admin/rewards/${viewingReward._id}/status`,
         updateData,
         {
           headers: {
@@ -187,27 +187,41 @@ const AdminRewardManagement = () => {
     }
   };
 
-  const exportToCSV = () => {
-    const csv = [
-      ['Claim ID', 'User', 'Email', 'Rank', 'Reward', 'Status', 'Claimed Date', 'Tracking Number'].join(','),
-      ...filteredRewards.map(reward => [
-        reward._id,
-        `${reward.userId.fname} ${reward.userId.lname}`,
-        reward.userId.email,
-        reward.rank,
-        reward.rewardType,
-        reward.status,
-        new Date(reward.claimedAt).toLocaleDateString(),
-        reward.trackingNumber || 'N/A'
-      ].join(','))
-    ].join('\n');
+  const exportToCSV = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const params: any = {};
+      if (statusFilter !== 'all') params.status = statusFilter.toUpperCase();
+      if (rankFilter !== 'all') params.rank = rankFilter;
 
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `reward-claims-${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
+      const response = await axios.get(`${API_URL}/admin/rewards/export/csv`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params,
+        responseType: 'blob'
+      });
+
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `reward-claims-${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: "Success",
+        description: "Rewards exported successfully",
+      });
+    } catch (error) {
+      console.error('Export error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to export rewards",
+        variant: "destructive",
+      });
+    }
   };
 
   const getStatusIcon = (status: string) => {
@@ -236,60 +250,66 @@ const AdminRewardManagement = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Binary Reward Management</h1>
-          <Button onClick={exportToCSV}>
-            <Download className="mr-2 h-4 w-4" />
-            Export CSV
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={fetchRewards} variant="outline">
+              <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+            <Button onClick={exportToCSV}>
+              <Download className="mr-2 h-4 w-4" />
+              Export CSV
+            </Button>
+          </div>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+          <Card className="border-2 border-blue-200 dark:border-blue-900 bg-white dark:bg-gray-800">
+            <CardHeader className="pb-2 bg-blue-50 dark:bg-blue-950">
+              <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Claimed
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="bg-white dark:bg-gray-800 pt-4">
               <div className="flex items-center justify-between">
                 <div className="text-2xl font-bold">{statusStats.claimed}</div>
                 <Gift className="h-8 w-8 text-blue-600" />
               </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+          <Card className="border-2 border-amber-200 dark:border-amber-900 bg-white dark:bg-gray-800">
+            <CardHeader className="pb-2 bg-amber-50 dark:bg-amber-950">
+              <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Processing
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="bg-white dark:bg-gray-800 pt-4">
               <div className="flex items-center justify-between">
                 <div className="text-2xl font-bold">{statusStats.processing}</div>
                 <Package className="h-8 w-8 text-amber-600" />
               </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+          <Card className="border-2 border-purple-200 dark:border-purple-900 bg-white dark:bg-gray-800">
+            <CardHeader className="pb-2 bg-purple-50 dark:bg-purple-950">
+              <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Shipped
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="bg-white dark:bg-gray-800 pt-4">
               <div className="flex items-center justify-between">
                 <div className="text-2xl font-bold">{statusStats.shipped}</div>
                 <Truck className="h-8 w-8 text-purple-600" />
               </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+          <Card className="border-2 border-green-200 dark:border-green-900 bg-white dark:bg-gray-800">
+            <CardHeader className="pb-2 bg-green-50 dark:bg-green-950">
+              <CardTitle className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Delivered
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="bg-white dark:bg-gray-800 pt-4">
               <div className="flex items-center justify-between">
                 <div className="text-2xl font-bold">{statusStats.delivered}</div>
                 <CheckCircle className="h-8 w-8 text-green-600" />
@@ -299,8 +319,8 @@ const AdminRewardManagement = () => {
         </div>
 
         {/* Filters */}
-        <Card>
-          <CardHeader>
+        <Card className="border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800">
+          <CardHeader className="bg-gray-50 dark:bg-gray-900">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1">
                 <div className="relative">
@@ -309,32 +329,32 @@ const AdminRewardManagement = () => {
                     placeholder="Search by user, email, rank, or reward..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600"
                   />
                 </div>
               </div>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full md:w-[180px]">
+                <SelectTrigger className="w-full md:w-[180px] bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-600">
                   <Filter className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="claimed">Claimed</SelectItem>
-                  <SelectItem value="processing">Processing</SelectItem>
-                  <SelectItem value="shipped">Shipped</SelectItem>
-                  <SelectItem value="delivered">Delivered</SelectItem>
+                <SelectContent className="bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-700">
+                  <SelectItem value="all" className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700">All Statuses</SelectItem>
+                  <SelectItem value="claimed" className="bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-950">Claimed</SelectItem>
+                  <SelectItem value="processing" className="bg-white dark:bg-gray-800 hover:bg-amber-50 dark:hover:bg-amber-950">Processing</SelectItem>
+                  <SelectItem value="shipped" className="bg-white dark:bg-gray-800 hover:bg-purple-50 dark:hover:bg-purple-950">Shipped</SelectItem>
+                  <SelectItem value="delivered" className="bg-white dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-green-950">Delivered</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={rankFilter} onValueChange={setRankFilter}>
-                <SelectTrigger className="w-full md:w-[180px]">
+                <SelectTrigger className="w-full md:w-[180px] bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 hover:border-purple-400 dark:hover:border-purple-600">
                   <Gift className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Filter by rank" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Ranks</SelectItem>
+                <SelectContent className="bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-700">
+                  <SelectItem value="all" className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700">All Ranks</SelectItem>
                   {Object.keys(RANK_ICONS).map(rank => (
-                    <SelectItem key={rank} value={rank}>
+                    <SelectItem key={rank} value={rank} className="bg-white dark:bg-gray-800 hover:bg-purple-50 dark:hover:bg-purple-950">
                       {RANK_ICONS[rank]} {rank}
                     </SelectItem>
                   ))}
@@ -342,7 +362,7 @@ const AdminRewardManagement = () => {
               </Select>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="bg-white dark:bg-gray-800 pt-6">
             {loading ? (
               <div className="text-center py-8">
                 <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
@@ -406,7 +426,7 @@ const AdminRewardManagement = () => {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Calendar className="h-4 w-4 text-muted-foreground" />
-                          {new Date(reward.claimedAt).toLocaleDateString()}
+                          {new Date(reward.claimedDate).toLocaleDateString()}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -439,21 +459,21 @@ const AdminRewardManagement = () => {
 
       {/* View/Update Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Manage Reward Claim</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-700">
+          <DialogHeader className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-800 -m-6 mb-4 p-6 rounded-t-lg">
+            <DialogTitle className="text-xl font-bold">Manage Reward Claim</DialogTitle>
+            <DialogDescription className="text-gray-600 dark:text-gray-400">
               Update status and manage shipping details
             </DialogDescription>
           </DialogHeader>
           {viewingReward && (
-            <div className="space-y-4">
+            <div className="space-y-4 px-2">
               {/* User Info */}
-              <Card>
-                <CardHeader>
+              <Card className="border-2 border-blue-200 dark:border-blue-900 bg-white dark:bg-gray-800">
+                <CardHeader className="bg-blue-50 dark:bg-blue-950">
                   <CardTitle className="text-base">User Information</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent className="space-y-2 pt-4 bg-white dark:bg-gray-800">
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div className="text-muted-foreground">Name:</div>
                     <div className="font-medium">
@@ -466,11 +486,11 @@ const AdminRewardManagement = () => {
               </Card>
 
               {/* Reward Info */}
-              <Card>
-                <CardHeader>
+              <Card className="border-2 border-purple-200 dark:border-purple-900 bg-white dark:bg-gray-800">
+                <CardHeader className="bg-purple-50 dark:bg-purple-950">
                   <CardTitle className="text-base">Reward Details</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent className="space-y-2 pt-4 bg-white dark:bg-gray-800">
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div className="text-muted-foreground">Rank:</div>
                     <div className="font-medium">
@@ -501,11 +521,11 @@ const AdminRewardManagement = () => {
               </Card>
 
               {/* Shipping Address */}
-              <Card>
-                <CardHeader>
+              <Card className="border-2 border-green-200 dark:border-green-900 bg-white dark:bg-gray-800">
+                <CardHeader className="bg-green-50 dark:bg-green-950">
                   <CardTitle className="text-base">Shipping Address</CardTitle>
                 </CardHeader>
-                <CardContent className="text-sm space-y-1">
+                <CardContent className="text-sm space-y-1 pt-4 bg-white dark:bg-gray-800">
                   <div className="font-medium">{viewingReward.shippingAddress.fullName}</div>
                   <div>{viewingReward.shippingAddress.phone}</div>
                   <div>{viewingReward.shippingAddress.addressLine1}</div>
@@ -522,54 +542,61 @@ const AdminRewardManagement = () => {
 
               {/* Tracking Number */}
               {(viewingReward.status === 'PROCESSING' || viewingReward.status === 'SHIPPED') && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Tracking Number</label>
+                <div className="space-y-2 p-4 bg-amber-50 dark:bg-amber-950 border-2 border-amber-200 dark:border-amber-900 rounded-lg">
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <Truck className="h-4 w-4" />
+                    Tracking Number
+                  </label>
                   <Input
                     placeholder="Enter tracking number..."
                     value={trackingNumber}
                     onChange={(e) => setTrackingNumber(e.target.value)}
+                    className="bg-white dark:bg-gray-800"
                   />
                 </div>
               )}
 
               {/* Timestamps */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Timeline</CardTitle>
+              <Card className="border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <CardHeader className="bg-gray-50 dark:bg-gray-900">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    Timeline
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Claimed:</span>
-                    <span>{new Date(viewingReward.claimedAt).toLocaleString()}</span>
+                <CardContent className="space-y-2 text-sm pt-4 bg-white dark:bg-gray-800">
+                  <div className="flex justify-between items-center p-2 bg-blue-50 dark:bg-blue-950 rounded">
+                    <span className="text-muted-foreground font-medium">Claimed:</span>
+                    <span className="font-semibold">{new Date(viewingReward.claimedDate).toLocaleString()}</span>
                   </div>
-                  {viewingReward.processingStartedAt && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Processing:</span>
-                      <span>{new Date(viewingReward.processingStartedAt).toLocaleString()}</span>
+                  {viewingReward.processingDate && (
+                    <div className="flex justify-between items-center p-2 bg-amber-50 dark:bg-amber-950 rounded">
+                      <span className="text-muted-foreground font-medium">Processing:</span>
+                      <span className="font-semibold">{new Date(viewingReward.processingDate).toLocaleString()}</span>
                     </div>
                   )}
-                  {viewingReward.shippedAt && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Shipped:</span>
-                      <span>{new Date(viewingReward.shippedAt).toLocaleString()}</span>
+                  {viewingReward.shippedDate && (
+                    <div className="flex justify-between items-center p-2 bg-purple-50 dark:bg-purple-950 rounded">
+                      <span className="text-muted-foreground font-medium">Shipped:</span>
+                      <span className="font-semibold">{new Date(viewingReward.shippedDate).toLocaleString()}</span>
                     </div>
                   )}
-                  {viewingReward.deliveredAt && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Delivered:</span>
-                      <span>{new Date(viewingReward.deliveredAt).toLocaleString()}</span>
+                  {viewingReward.deliveredDate && (
+                    <div className="flex justify-between items-center p-2 bg-green-50 dark:bg-green-950 rounded">
+                      <span className="text-muted-foreground font-medium">Delivered:</span>
+                      <span className="font-semibold">{new Date(viewingReward.deliveredDate).toLocaleString()}</span>
                     </div>
                   )}
                 </CardContent>
               </Card>
             </div>
           )}
-          <DialogFooter className="flex-wrap gap-2">
+          <DialogFooter className="flex-wrap gap-2 bg-gray-50 dark:bg-gray-900 -m-6 mt-4 p-6 rounded-b-lg border-t-2 border-gray-200 dark:border-gray-700">
             {viewingReward?.status === 'CLAIMED' && (
               <Button
                 onClick={() => handleUpdateStatus('PROCESSING')}
                 disabled={updatingStatus}
-                className="bg-amber-600 hover:bg-amber-700"
+                className="bg-amber-600 hover:bg-amber-700 text-white font-semibold shadow-lg"
               >
                 <Package className="h-4 w-4 mr-2" />
                 Mark as Processing
@@ -579,7 +606,7 @@ const AdminRewardManagement = () => {
               <Button
                 onClick={() => handleUpdateStatus('SHIPPED')}
                 disabled={updatingStatus || !trackingNumber}
-                className="bg-purple-600 hover:bg-purple-700"
+                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold shadow-lg disabled:opacity-50"
               >
                 <Truck className="h-4 w-4 mr-2" />
                 Mark as Shipped
@@ -589,13 +616,17 @@ const AdminRewardManagement = () => {
               <Button
                 onClick={() => handleUpdateStatus('DELIVERED')}
                 disabled={updatingStatus}
-                className="bg-green-600 hover:bg-green-700"
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold shadow-lg"
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
                 Mark as Delivered
               </Button>
             )}
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsDialogOpen(false)}
+              className="bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold"
+            >
               Close
             </Button>
           </DialogFooter>
