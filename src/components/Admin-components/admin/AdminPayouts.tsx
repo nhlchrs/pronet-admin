@@ -707,7 +707,7 @@ export default function AdminPayouts() {
               {/* Actions */}
               <div className="flex justify-between items-center pt-4 border-t-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 -mx-6 -mb-6 px-6 py-4 rounded-b-xl">
                 <div>
-                  {selectedPayout.payoutMethod === 'crypto' && 
+                  {/* {selectedPayout.payoutMethod === 'crypto' && 
                    selectedPayout.status === 'pending' && (
                     <Button
                       onClick={handleProcessPayout}
@@ -716,7 +716,7 @@ export default function AdminPayouts() {
                     >
                       {processing ? 'Processing...' : '🚀 Process Payout via NOWPayments'}
                     </Button>
-                  )}
+                  )} */}
                 </div>
                 <div className="flex gap-3">
                   <Button
