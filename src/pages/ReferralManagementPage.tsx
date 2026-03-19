@@ -152,19 +152,15 @@ export const ReferralManagementPage = () => {
                     <p className="font-medium text-gray-900">{u.fname} {u.lname}</p>
                     <p className="text-sm text-gray-500">{u.email}</p>
                     <div className="flex gap-1 mt-1 flex-wrap">
-                      {u.referralCode && (
-                        <p className="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded border border-green-200 font-mono">
-                          🔑 {u.referralCode}
-                        </p>
-                      )}
+                
                       {u.leftReferralCode && (
                         <p className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 font-mono">
-                          ⬅️ {u.leftReferralCode}
+                          ⬅️ LPRO: {u.leftReferralCode}
                         </p>
                       )}
                       {u.rightReferralCode && (
                         <p className="text-xs text-orange-600 bg-orange-50 px-2 py-0.5 rounded border border-orange-200 font-mono">
-                          ➡️ {u.rightReferralCode}
+                          ➡️ RPRO: {u.rightReferralCode}
                         </p>
                       )}
                     </div>
@@ -249,6 +245,19 @@ export const ReferralManagementPage = () => {
         (() => {
           // Find the selected user from state to get their referral codes
           // We'll fetch this data when user is selected
+          if (!stats) {
+            return (
+              <Card className="border-l-4 border-l-yellow-400">
+                <CardContent className="py-10 text-center">
+                  <Network className="w-12 h-12 text-yellow-400 mx-auto mb-3" />
+                  <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-1">User Not Connected</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    This user does not have a team member record yet. They may not be active or connected to the referral network.
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          }
           return (
             <>
               <Card className="border-l-4 border-l-blue-500">
@@ -295,7 +304,7 @@ export const ReferralManagementPage = () => {
                         <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">⬅️ Left Team (Lpro)</p>
                        
                       </div>
-                      <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{stats.binaryTree.leftLegCount || 0}</p>
+                      <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{stats?.binaryTree?.leftLegCount || 0}</p>
                       
                     </div>
 
@@ -305,7 +314,7 @@ export const ReferralManagementPage = () => {
                         <p className="text-sm font-semibold text-orange-700 dark:text-orange-300">➡️ Right Team (Rpro)</p>
                        
                       </div>
-                      <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">{stats.binaryTree.rightLegCount || 0}</p>
+                      <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">{stats?.binaryTree?.rightLegCount || 0}</p>
                       
                     </div>
                   </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Loader2, AlertCircle, Users, TrendingUp, Award, DollarSign, ChevronDown, Key } from 'lucide-react';
 import teamReferralService, { setAuthToken } from '../../services/teamReferralService';
 import { useAuth } from '../../context/AuthContext';
@@ -73,19 +73,14 @@ const OrgChartNode = ({ member, targetUserId, maxDepth = 5, currentDepth = 0 }: 
         {member.userId?.email && (
           <div className="org-node-email">{member.userId.email}</div>
         )}
-        {member.referralCode && (
-          <div className="referral-code-org">
-            <div className="code-badge main">🔑 {member.referralCode}</div>
-          </div>
-        )}
         {member.leftReferralCode && (
           <div className="referral-code-org">
-            <div className="code-badge left">⬅️ {member.leftReferralCode}</div>
+            <div className="code-badge left">⬅️ LPRO: {member.leftReferralCode}</div>
           </div>
         )}
         {member.rightReferralCode && (
           <div className="referral-code-org">
-            <div className="code-badge right">➡️ {member.rightReferralCode}</div>
+            <div className="code-badge right">➡️ RPRO: {member.rightReferralCode}</div>
           </div>
         )}
         <div className="org-node-stats">
@@ -173,19 +168,14 @@ const HierarchyNode = ({ node, level, targetUserId }: HierarchyNodeProps) => {
             </div>
             <p className="text-xs text-gray-600">{node.userId?.email}</p>
             <div className="flex gap-1 mt-1 flex-wrap">
-              {node.referralCode && (
-                <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded border text-green-600 bg-green-50 border-green-200">
-                  🔑 {node.referralCode}
-                </span>
-              )}
               {node.leftReferralCode && (
                 <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded border text-blue-600 bg-blue-50 border-blue-200">
-                  ⬅️ {node.leftReferralCode}
+                  ⬅️ LPRO: {node.leftReferralCode}
                 </span>
               )}
               {node.rightReferralCode && (
                 <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded border text-orange-600 bg-orange-50 border-orange-200">
-                  ➡️ {node.rightReferralCode}
+                  ➡️ RPRO: {node.rightReferralCode}
                 </span>
               )}
             </div>
@@ -227,26 +217,27 @@ export const TeamHierarchy = ({ userId, depth = 5 }: TeamHierarchyProps) => {
   const [hierarchy, setHierarchy] = useState<any>(null);
   const [targetUserId, setTargetUserId] = useState<string>('');
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');  const [viewMode, setViewMode] = useState<'tree' | 'org-chart'>('org-chart');
-  useEffect(() => {
-    if (userId && token) {
-      fetchHierarchy();
-    }
-  }, [userId, token]);
+  const [error, setError] = useState('');
+  const [viewMode, setViewMode] = useState<'tree' | 'org-chart'>('org-chart');
+  // fetchId ensures only the latest fetch updates state, preventing StrictMode double-render
+  const fetchIdRef = useRef(0);
 
-  const fetchHierarchy = async () => {
+  const fetchHierarchy = useCallback(async () => {
+    if (!userId || !token) return;
+
+    const fetchId = ++fetchIdRef.current;
+
     try {
       setLoading(true);
       setError('');
-      
-      // Set auth token before making request
-      if (token) {
-        setAuthToken(token);
-      }
-      
-      console.log('Fetching hierarchy for userId:', userId, 'with depth:', depth);
+      setHierarchy(null);
+
+      setAuthToken(token);
+
       const result = await teamReferralService.getDownlineStructure(userId, depth);
-      console.log('Hierarchy API Response:', result);
+
+      // Discard result from a superseded (stale) request
+      if (fetchId !== fetchIdRef.current) return;
 
       if (result.success) {
         setHierarchy(result.data.hierarchy);
@@ -255,12 +246,18 @@ export const TeamHierarchy = ({ userId, depth = 5 }: TeamHierarchyProps) => {
         setError(result.message || 'Failed to load hierarchy');
       }
     } catch (err: any) {
-      console.error('Hierarchy fetch error:', err);
+      if (fetchId !== fetchIdRef.current) return;
       setError(err.response?.data?.message || err.message || 'Failed to fetch hierarchy');
     } finally {
-      setLoading(false);
+      if (fetchId === fetchIdRef.current) {
+        setLoading(false);
+      }
     }
-  };
+  }, [userId, token, depth]);
+
+  useEffect(() => {
+    fetchHierarchy();
+  }, [fetchHierarchy]);
 
   if (loading) {
     return (
