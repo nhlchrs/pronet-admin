@@ -89,7 +89,7 @@ const navItems: NavItem[] = [
   name: "Content",
   subItems: [
     { name: "Announcements", path: "/admin/announcements", pro: false },
-    { name: "Download Center", path: "/admin/downloads", pro: false },
+    // { name: "Download Center", path: "/admin/downloads", pro: false },
     // { name: "Support Tickets", path: "/admin/support", pro: false },
   ],
 },
