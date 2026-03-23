@@ -257,10 +257,10 @@ export default function AdminMediaUpload() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
                   {item.description || 'No description'}
                 </p>
-                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
+                {/* <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-3">
                   <span>{formatFileSize(item.fileSize)}</span>
                   <span>{item.views} views</span>
-                </div>
+                </div> */}
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setSelectedMedia(item)}
